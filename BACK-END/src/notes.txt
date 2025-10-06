@@ -1,0 +1,26 @@
+
+
+book = crud of books
+user = user
+borrow = for borrowing books
+
+book = 
+    addBook                post         /
+    getAllBook             get          /
+    updateBook             put          /:id
+    deleteBook             delete       /:id
+
+user = 
+    loginUser               post        /login
+    registerUser            post        /register
+    listUser                get         /users
+    removeUser              delete      /remove
+
+borrow = 
+    borrowBook              post        /borrow
+    returnBook              post        /return
+
+
+    tinatamad pa ako pero dapat may middleware pa pala toh lol
+    ayusin ko na lang next time 
+
