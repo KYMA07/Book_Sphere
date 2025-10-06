@@ -5,20 +5,23 @@ user = user
 borrow = for borrowing books
 
 book = 
-    addBook                post         /
-    getAllBook             get          /
-    updateBook             put          /:id
-    deleteBook             delete       /:id
+    addBook                post         /                   
+    getAllBook             get          /                   
+    updateBook             put          /:id                
+    deleteBook             delete       /:id            
 
 user = 
-    loginUser               post        /login
-    registerUser            post        /register
-    listUser                get         /users
-    removeUser              delete      /remove
+    loginUser               post        /login              all
+    registerUser            post        /register           admin
+    listUser                get         /users              admin
+    removeUser              delete      /remove:id          admin
 
 borrow = 
-    borrowBook              post        /borrow
-    returnBook              post        /return
+    borrowBook              post        /borrow             lib
+    returnBook              post        /return             lib
+
+auth =
+
 
 
     tinatamad pa ako pero dapat may middleware pa pala toh lol
