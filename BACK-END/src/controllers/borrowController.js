@@ -1,7 +1,7 @@
-import BorrowRecord from '../models/BorrowRecord.js';
-import Book from '../models/Book.js';
-import Student from '../models/Student.js';
-import User from '../models/User.js';
+import BorrowRecord from '../models/borrowModel.js';
+import Book from '../models/bookModel.js';
+import Student from '../models/studentModel.js';
+import User from '../models/userModel.js';
 
 export const borrowBook = async (req, res) => {
   try {
