@@ -5,6 +5,7 @@ DB_HOST=localhost
 DB_USER=(ur user )
 DB_PASS=(ur password)
 DB_NAME=book_sphere
+DB_PORT=3306
 PORT=5000
 
 INSIDE THE database folder download the book_sphere.sql file

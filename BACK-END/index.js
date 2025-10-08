@@ -17,7 +17,7 @@ app.use("/books", bookRoutes);
 app.use("/user", userRoutes);
 app.use("/borrow", borrowRoutes);
 
-const PORT = process.env.PORT || 3306;
+const PORT = process.env.PORT || 5000;
 
 sequelize.sync()
   .then(() => console.log('Database connected and synced'))
