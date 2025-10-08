@@ -24,6 +24,7 @@ export const loginUser = async (req, res) => {
     const valid = await bcrypt.compare(password, user.password_hash);// compares to check kung tama
     if (!valid) return res.status(401).json({ message: 'Invalid password' });
 
+    //res.json({ message: 'Login successful', user });
     // Generate JWT
     const token = jwt.sign(
       { user_id: user.user_id, username: user.username, role: user.role },
