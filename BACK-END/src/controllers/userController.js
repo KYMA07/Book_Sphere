@@ -1,5 +1,6 @@
 import User from '../models/userModel.js';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 
 export const registerUser = async (req, res) => {
@@ -23,7 +24,13 @@ export const loginUser = async (req, res) => {
     const valid = await bcrypt.compare(password, user.password_hash);// compares to check kung tama
     if (!valid) return res.status(401).json({ message: 'Invalid password' });
 
-    res.json({ message: 'Login successful', user });
+    // Generate JWT
+    const token = jwt.sign(
+      { user_id: user.user_id, username: user.username, role: user.role },
+      process.env.JWT_SECRET || 'your_jwt_secret',
+      { expiresIn: '1h' }
+    );
+    res.json({ message: 'Login successful', token, user });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
