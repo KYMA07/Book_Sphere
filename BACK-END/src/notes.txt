@@ -6,7 +6,7 @@ borrow = for borrowing books
 
 book = 
     addBook                post         /                   
-    getAllBook             get          /                   
+    getAllBooks             get          /                   
     updateBook             put          /:id                
     deleteBook             delete       /:id            
 
