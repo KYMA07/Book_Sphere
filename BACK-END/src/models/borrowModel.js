@@ -1,8 +1,8 @@
 import { DataTypes } from 'sequelize';
-import sequelize from '../config/database.js';
-import Student from './Student.js';
-import Book from './Book.js';
-import User from './User.js';
+import sequelize from '../database/database.js';
+import Student from './studentModel.js';
+import Book from './bookModel.js';
+import User from './userModel.js';
 // ang complicated amp
 const BorrowRecord = sequelize.define('BorrowRecord', {
   record_id: {
