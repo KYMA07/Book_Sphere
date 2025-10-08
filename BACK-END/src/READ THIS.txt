@@ -1,0 +1,66 @@
+CREATE A .env file
+inside input these lines ( replace the ())
+
+DB_HOST=localhost
+DB_USER=(ur user )
+DB_PASS=(ur password)
+DB_NAME=book_sphere
+DB_PORT=3306
+PORT=5000
+
+INSIDE THE database folder download the book_sphere.sql file
+go to mysql workbench 
+server -> data import
+import the file
+
+OR 
+mysql -u root -p book_sphere < book_sphere.sql
+IN THE COMMANDLINE
+
+
+book = crud of books
+user = user
+borrow = for borrowing books
+
+book = 
+    addBook                post         /                   
+    getAllBooks             get          /                   
+    updateBook             put          /:id                
+    deleteBook             delete       /:id            
+
+user = 
+    loginUser               post        /login              all
+    registerUser            post        /register           admin
+    listUser                get         /users              admin
+    removeUser              delete      /remove:id          admin
+
+borrow = 
+    borrowBook              post        /borrow             lib
+    returnBook              post        /return             lib
+
+auth =
+
+
+
+    tinatamad pa ako pero dapat may middleware pa pala toh lol
+    ayusin ko na lang next time 
+
+Borrowing a Book
+
+    -Check if the book exists and is available.
+    -Create a borrow record.
+    -Mark the book as borrowed.
+    -Send a success response.
+
+Returning a Book
+
+    -Check if the borrow record exists and hasn’t already been returned.
+    -Mark the record as returned.
+    -Mark the book as available again.
+    -Send success response.
+
+Viewing All Borrow Records
+
+    =Get all borrow records.
+    -Include related student, book, and librarian data.
+    -Return as JSON.
