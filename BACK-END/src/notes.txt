@@ -27,3 +27,22 @@ auth =
     tinatamad pa ako pero dapat may middleware pa pala toh lol
     ayusin ko na lang next time 
 
+Borrowing a Book
+
+    -Check if the book exists and is available.
+    -Create a borrow record.
+    -Mark the book as borrowed.
+    -Send a success response.
+
+Returning a Book
+
+    -Check if the borrow record exists and hasn’t already been returned.
+    -Mark the record as returned.
+    -Mark the book as available again.
+    -Send success response.
+
+Viewing All Borrow Records
+
+    =Get all borrow records.
+    -Include related student, book, and librarian data.
+    -Return as JSON.
