@@ -5,7 +5,7 @@ import sequelize from "./src/database/database.js";
 
 import bookRoutes from "./src/routes/bookRoutes.js";
 import userRoutes from "./src/routes/userRoutes.js";
-import borrowRoutes from "./src/routes/borrowRoutes.js";
+import borrowRoutes from "./src/routes/BorrowRoutes.js";
 
 dotenv.config();
 const app = express();

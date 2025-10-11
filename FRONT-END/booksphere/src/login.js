@@ -1,9 +1,47 @@
-import React from 'react';
-import './Login.css'; 
+import React, { useState } from 'react';
+import axios from 'axios';
+import './login.css';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState(''); // 'success' or 'error'
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await axios.post('http://localhost:5000/user/login', {
+        username,
+        password,
+      });
+
+      // ✅ Success
+      setMessage('Login successful! Welcome back ');
+      setMessageType('success');
+      localStorage.setItem('token', res.data.token);
+
+      // Redirect after short delay
+      setTimeout(() => {
+        navigate('/home');   // ✅ go to Home.js
+      }, 1000);
+
+    } catch (err) {
+      if (err.response) {
+        setMessage(err.response.data.message || 'Login failed');
+      } else {
+        setMessage('Server error. Please try again later.');
+      }
+      setMessageType('error');
+    }
+  };
+
+
   return (
-    <div className="container">
+     <div className="container">
       <div className="overlay"></div>
 
       <div className="login-section">
@@ -15,13 +53,30 @@ function Login() {
         <div className="login-box">
           <h2>Welcome Back</h2>
           <p className="subtitle">Log in to Continue your Reading Journey</p>
+         
+          {message && (
+            <div className={`message ${messageType}`}>
+              {message}
+            </div>
+          )}
 
-          <form className="login-form">
-            <input type="text" placeholder="Username or Email" required />
-            <input type="password" placeholder="Password" required />
+          <form className="login-form" onSubmit={handleSubmit}>
+            <input
+              type="text"
+              placeholder="Username or Email"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
             <button type="submit" className="login-btn">Login</button>
             <div className="divider"></div>
-            <button type="button" className="register-btn">Register</button>
           </form>
         </div>
       </div>
