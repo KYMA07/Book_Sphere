@@ -1,8 +1,8 @@
 // App.js
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Login from './login';   // ✅ import your Login component
-import Home from './home';     // ✅ import Home (or any other page)
+import Login from './login';   // import your login.js
+import Home from './home';     //import home.js
 
 function App() {
   return (
