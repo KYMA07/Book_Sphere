@@ -1,0 +1,226 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Open+Sans:wght@300;400;600&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body, html {
+    height: 100%;
+    font-family: 'Open Sans', sans-serif;
+}
+
+/* --- Keyframes para sa mango float --- */
+@keyframes float {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-5px); 
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+@keyframes slowFloat {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(3px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+/* Background */
+.container {
+    position: relative;
+    height: 100vh;
+    width: 100vw;
+    background: url('librarybackground.jpg') no-repeat center center fixed;
+    background-size: cover;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fffaf0;
+    filter: grayscale(40%) sepia(40%) hue-rotate(-10deg) brightness(85%) contrast(110%);
+}
+
+/* dark uberlay */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: rgba(20, 15, 10, 0.75);
+    backdrop-filter: blur(5px);
+    z-index: 1;
+}
+
+/* Center section  */
+.login-section {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+ 
+    gap: 12rem;
+  
+    max-width: 1200px;
+
+    padding: 0 2rem;
+}
+
+/* title ng ina */
+.title-group {
+
+    width: 450px;
+    text-align: left;
+    animation: fadeIn 1.5s ease-out;
+    background: transparent;
+}
+
+.brand-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 4.5rem;
+    letter-spacing: 6px;
+    line-height: 1.1;
+    color: #f8f3ea;
+    text-transform: uppercase;
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.4), 0 0 8px rgba(255, 255, 255, 0.2);
+    margin-bottom: 0.5rem;
+    z-index: 10;
+    position: relative;
+      /* --- floating sa pool --- */
+    animation: float 2s ease-in-out infinite; 
+    
+}
+
+.tagline {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 300;
+    font-size: 1.2rem;
+    letter-spacing: 4px;
+    color: #d2c7b6;
+    margin-top: 0.8rem;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    white-space: normal;
+      /* --- ang seconds --- */
+    animation: slowFloat 2s ease-in-out infinite;
+}
+
+/* Login box  */
+.login-box {
+    background: rgba(30, 30, 30, 0.85);
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.7), 0 0 15px rgba(193, 154, 107, 0.4);
+    text-align: center;
+    width: 340px;
+
+    height: 430px;
+    color: #fffaf0;
+    animation: fadeInZoom 1.2s ease-out;
+    border: 1px solid rgba(193, 154, 107, 0.2);
+    display: flex;
+    flex-direction: column;
+  
+    justify-content: space-between;
+}
+
+.login-box h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    margin-bottom: 1.25rem; 
+    letter-spacing: 1px;
+    color: #e8e0d5;
+}
+
+.subtitle {
+    font-size: 0.85rem;
+    color: #b0a79b;
+    margin-bottom: 0.5rem;
+}
+
+/* Form  */
+.login-form {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.login-form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 1.25rem; 
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.05);
+    color: #f8f3ea;
+    font-size: 0.9rem;
+    outline: none;
+    transition: all 0.4s ease;
+}
+
+.login-form input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.login-form input:focus {
+    background-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 10px rgba(193, 154, 107, 0.7);
+    border-color: #c19a6b;
+}
+
+/* Buttons  */
+.button-group {
+    padding-top: 0.75rem;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 10px;
+    background: linear-gradient(145deg, #d4a675, #c19a6b);
+    border: none;
+    border-radius: 8px;
+    color: #3e3831;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s ease;
+    margin-bottom: 0.75rem;
+}
+
+.login-btn:hover {
+    background: linear-gradient(145deg, #e0b380, #ccac82);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
+}
+
+.register-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: transparent;
+    border: 2px solid #c19a6b;
+    border-radius: 8px;
+    color: #c19a6b;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.4s ease;
+}
+
+.register-btn:hover {
+    background-color: #c19a6b;
+    color: #1e1e1e;
+    border-color: #c19a6b;
+}
