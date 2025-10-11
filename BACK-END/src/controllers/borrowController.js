@@ -8,7 +8,7 @@ export const borrowBook = async (req, res) => {
     const { student_id, book_id, librarian_id, due_date } = req.body;// deconstructuring ya
 
     // Check if book is available
-    const book = await Book.findByPk(book_id);
+    const book = await Book.findByPk(book_id);// find by primary kery which is ung bookid
     if (!book || book.status !== 'available') {
       return res.status(400).json({ message: 'Book not available' });
     }

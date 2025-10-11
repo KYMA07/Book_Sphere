@@ -37,7 +37,7 @@ export const updateBook = async (req, res) => {
 export const deleteBook = async (req, res) => {
   try {
     const { id } = req.params;
-    const deleted = await Book.destroy({ where: { book_id: id } });// lol this is to delete . yung destroy sa sequeluze un
+    const deleted = await Book.destroy({ where: { book_id: id } });// lol this is to delete -- yung destroy sa sequeluze un
     if (!deleted) return res.status(404).json({ message: 'Book not found' });
     res.json({ message: 'Book deleted successfully' });
   } catch (error) {
@@ -45,7 +45,7 @@ export const deleteBook = async (req, res) => {
   }
 };
 
-export const getBookById = async (req, res) => {
+export const getBookById = async (req, res) => { // 2  get a singular book
   try {
     const { id } = req.params;
     const book = await Book.findOne({ where: { book_id: id } });
