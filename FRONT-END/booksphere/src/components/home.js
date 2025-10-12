@@ -1,33 +1,15 @@
 import React from 'react';
-import '../css/styles.css'; 
+import '../css/styles.css';
 
-function BookSphere() {
+function Home() {
   return (
-    <>
-      <header className="header">
-        <div className="brand-group">
-          <div className="logo">BookSphere | </div>
-          <div className="tagline-in-header">WHERE EVERY PAGE OPENS A NEW WORLD</div>
-        </div>
-
-        <nav className="nav-links">
-          <a href="#">HOME</a>
-          <a href="#">DASHBOARD</a>
-          <a href="#">BOOKS</a>
-          <a href="#">USERS</a>
-        </nav>
-      </header>
-
+    <div className="home-page">
       <div className="container">
+        <h1>Welcome to BookSphere</h1>
+        <p className="subtitle">Where every page opens a new world</p>
       </div>
-
-      <footer className="footer">
-        <div className="footer-content">
-          <span>&copy; 2025 BookSphere Inc. All rights reserved.</span>
-        </div>
-      </footer>
-    </>
+    </div>
   );
 }
 
-export default BookSphere;
+export default Home;

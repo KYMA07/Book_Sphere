@@ -25,15 +25,16 @@ function Login() {
       localStorage.setItem('token', res.data.token);
 
       // Get user role from backend response
-      const role = res.data.user.role;
+      const role = res.data.user.role.toLowerCase();
+      localStorage.setItem('role', role);
 
       setTimeout(() => {
-        if (role === 'Admin') {
-          navigate('/home');        // Admin = home.js
-        } else if (role === 'Librarian') {
-          navigate('/librarian');   // Librarian = librarian.js
-        } else if (role === 'Student') {
-          navigate('/student');     // Student → student.js
+        if (role === 'admin') {
+          navigate('/home');
+        } else if (role === 'librarian') {
+          navigate('/librarian');
+        } else if (role === 'student') {
+          navigate('/student');
         } else {
           navigate('/');
         }

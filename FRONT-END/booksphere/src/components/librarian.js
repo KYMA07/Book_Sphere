@@ -1,5 +1,6 @@
 import React from 'react';
 import '../css/styles.css'; 
+import { Link } from 'react-router-dom';
 
 function BookSphere() {
   return (
@@ -11,9 +12,9 @@ function BookSphere() {
         </div>
 
         <nav className="nav-links">
-          <a href="#">HOME</a>
-          <a href="#">DASHBOARD</a>
-          <a href="#">BOOKS</a>
+          <Link to="/home">HOME</Link>
+          <Link to="/dashboard">DASHBOARD</Link>
+          <Link to="/books">BOOKS</Link>
         </nav>
       </header>
 
