@@ -1,18 +1,17 @@
-// App.js
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Login from './login';   // import your login.js
-import Home from './home';     //import home.js
+import Login from './components/login';
+import Home from './components/home';
+import Librarian from './components/librarian';
+import Student from './components/student';
 
 function App() {
   return (
     <Router>
       <Routes>
-        {/* Default route shows Login */}
         <Route path="/" element={<Login />} />
-
-        {/* After login, navigate here */}
         <Route path="/home" element={<Home />} />
+        <Route path="/librarian" element={<Librarian />} />
+        <Route path="/student" element={<Student />} />
       </Routes>
     </Router>
   );

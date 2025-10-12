@@ -1,5 +1,5 @@
 import React from 'react';
-import './styles.css'; 
+import '../css/styles.css'; 
 
 function BookSphere() {
   return (
@@ -10,15 +10,11 @@ function BookSphere() {
           <div className="tagline-in-header">WHERE EVERY PAGE OPENS A NEW WORLD</div>
         </div>
 
-        <nav className="nav-links">
-          <a href="#">HOME</a>
-          <a href="#">DASHBOARD</a>
-          <a href="#">BOOKS</a>
-          <a href="#">PROFILE</a>
-        </nav>
       </header>
 
       <div className="container">
+        <h1> Student instruction tas button sa baba </h1>
+        <button> search books </button>
       </div>
 
       <footer className="footer">

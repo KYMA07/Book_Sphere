@@ -44,7 +44,7 @@ body, html {
     position: relative;
     height: 100vh;
     width: 100vw;
-    background: url('librarybackground.jpg') no-repeat center center fixed;
+    background-image: url('../resources/librarybackground.jpg') no-repeat center center fixed;
     background-size: cover;
     overflow: hidden;
     display: flex;

@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import './login.css';
+import '../css/login.css';
 import { useNavigate } from 'react-router-dom';
 
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState(''); // 'success' or 'error'
+  const [messageType, setMessageType] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -24,9 +24,19 @@ function Login() {
       setMessageType('success');
       localStorage.setItem('token', res.data.token);
 
-      // Redirect after short delay
+      // Get user role from backend response
+      const role = res.data.user.role;
+
       setTimeout(() => {
-        navigate('/home');   // ✅ go to Home.js
+        if (role === 'Admin') {
+          navigate('/home');        // Admin = home.js
+        } else if (role === 'Librarian') {
+          navigate('/librarian');   // Librarian = librarian.js
+        } else if (role === 'Student') {
+          navigate('/student');     // Student → student.js
+        } else {
+          navigate('/');
+        }
       }, 1000);
 
     } catch (err) {
@@ -39,9 +49,8 @@ function Login() {
     }
   };
 
-
   return (
-     <div className="container">
+    <div className="container">
       <div className="overlay"></div>
 
       <div className="login-section">
@@ -53,7 +62,7 @@ function Login() {
         <div className="login-box">
           <h2>Welcome Back</h2>
           <p className="subtitle">Log in to Continue your Reading Journey</p>
-         
+
           {message && (
             <div className={`message ${messageType}`}>
               {message}
