@@ -2,7 +2,6 @@ import User from '../models/userModel.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-
 export const registerUser = async (req, res) => {
   try {
     const { username, password, email, role } = req.body;// from front end user inpur
