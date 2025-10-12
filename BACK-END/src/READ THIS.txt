@@ -17,6 +17,26 @@ OR
 mysql -u root -p book_sphere < book_sphere.sql
 IN THE COMMANDLINE
 
+//
+event_scheduler=ON
+//
+ON SCHEDULE EVERY 1 DAY
+DO
+  UPDATE borrow_records
+  SET status = 'overdue'
+  WHERE status = 'borrowed' AND due_date < NOW();
+
+ON SCHEDULE EVERY 1 DAY
+DO
+  UPDATE borrow_records
+  SET status = 'overdue'
+  WHERE status = 'borrowed' AND due_date < NOW();
+
+// alter the database
+ALTER TABLE borrow_records DROP COLUMN returned;
+-- Add the new status column
+ALTER TABLE borrow_records 
+  ADD COLUMN status ENUM('borrowed','returned','overdue','lost') DEFAULT 'borrowed' AFTER return_date;
 
 book = crud of books
 user = user
