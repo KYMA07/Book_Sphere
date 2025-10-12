@@ -3,7 +3,7 @@ import sequelize from '../database/database.js';
 import Student from './studentModel.js';
 import Book from './bookModel.js';
 import User from './userModel.js';
-// ang complicated amp
+
 const BorrowRecord = sequelize.define('BorrowRecord', {
   record_id: {
     type: DataTypes.INTEGER,
@@ -40,22 +40,22 @@ const BorrowRecord = sequelize.define('BorrowRecord', {
   },
   due_date: {
     type: DataTypes.DATE,
-    allowNull: true
+    allowNull: false
   },
   return_date: {
     type: DataTypes.DATE,
     allowNull: true
   },
-  returned: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false
+  status: {
+    type: DataTypes.ENUM('borrowed', 'returned', 'overdue', 'lost'),
+    defaultValue: 'borrowed'
   }
 }, {
   tableName: 'borrow_records',
   timestamps: false
 });
 
-// relationships btw sequelize does the join query 4 u
+// Relationships
 Student.hasMany(BorrowRecord, { foreignKey: 'student_id' });
 BorrowRecord.belongsTo(Student, { foreignKey: 'student_id' });
 
@@ -65,4 +65,4 @@ BorrowRecord.belongsTo(Book, { foreignKey: 'book_id' });
 User.hasMany(BorrowRecord, { foreignKey: 'librarian_id' });
 BorrowRecord.belongsTo(User, { foreignKey: 'librarian_id' });
 
-export default BorrowRecord;
+export default BorrowRecord;  
