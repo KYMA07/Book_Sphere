@@ -3,33 +3,26 @@ import axios from 'axios';
 import '../css/styles.css';
 
 function Dashboard() {
-  const [allRecords, setAllRecords] = useState([]);
   const [records, setRecords] = useState([]);
   const [range, setRange] = useState('overall');
   const [status, setStatus] = useState('');
   const [selectedRecord, setSelectedRecord] = useState(null);
 
-  // Fetch records
+  // ✅ Fetch all records initially, then use filters if applied
   const fetchRecords = async () => {
     try {
       let url = 'http://localhost:5000/borrow';
       let params = {};
 
+      // If filters are applied, use the filtered endpoint
       if (range !== 'overall' || status !== '') {
         url = 'http://localhost:5000/borrow/filtered';
         params = { range, status };
       }
 
       const res = await axios.get(url, { params });
+      console.log("API response:", res.data);
       setRecords(res.data);
-
-      // Always fetch full dataset for accurate counts
-      if (url === 'http://localhost:5000/borrow') {
-        setAllRecords(res.data);
-      } else {
-        const fullRes = await axios.get('http://localhost:5000/borrow');
-        setAllRecords(fullRes.data);
-      }
     } catch (err) {
       console.error("Error fetching records:", err);
     }
@@ -39,10 +32,12 @@ function Dashboard() {
     fetchRecords();
   }, [range, status]);
 
-  // Accurate counts from full dataset
-  const borrowedCount = allRecords.filter(r => r.status === 'borrowed').length;
-  const returnedCount = allRecords.filter(r => r.status === 'returned').length;
-  const overdueCount = allRecords.filter(r => r.status === 'overdue').length;
+  // Counts
+  const borrowedCount = records.filter(r => !r.returned).length;
+  const returnedCount = records.filter(r => r.returned).length;
+  const overdueCount = records.filter(
+    r => !r.returned && r.due_date && new Date(r.due_date) < new Date()
+  ).length;
 
   return (
     <div className="dashboard-page">
@@ -82,42 +77,39 @@ function Dashboard() {
             <th>Librarian</th>
             <th>Borrow Date</th>
             <th>Due Date</th>
-            <th>Status</th>
+            <th>Returned</th>
           </tr>
         </thead>
         <tbody>
           {records.map((r) => (
-            <React.Fragment key={r.record_id}>
-              <tr onClick={() => setSelectedRecord(selectedRecord?.record_id === r.record_id ? null : r)}>
-                <td>{r.record_id}</td>
-                <td>{r.Student?.full_name} ({r.Student?.student_number})</td>
-                <td>{r.Book?.title}</td>
-                <td>{r.User?.username}</td>
-                <td>{r.borrow_date ? new Date(r.borrow_date).toLocaleDateString() : '-'}</td>
-                <td>{r.due_date ? new Date(r.due_date).toLocaleDateString() : '-'}</td>
-                <td>{r.status}</td>
-              </tr>
-
-              {/* Inline expandable details */}
-              {selectedRecord?.record_id === r.record_id && (
-                <tr className="record-details-row">
-                  <td colSpan="7">
-                    <div className="record-details">
-                      <p><strong>Student:</strong> {r.Student?.full_name} ({r.Student?.student_number})</p>
-                      <p><strong>Book:</strong> {r.Book?.title}</p>
-                      <p><strong>Librarian:</strong> {r.User?.username}</p>
-                      <p><strong>Borrow Date:</strong> {r.borrow_date ? new Date(r.borrow_date).toLocaleString() : '-'}</p>
-                      <p><strong>Due Date:</strong> {r.due_date ? new Date(r.due_date).toLocaleString() : '-'}</p>
-                      <p><strong>Status:</strong> {r.status}</p>
-                      {r.return_date && <p><strong>Return Date:</strong> {new Date(r.return_date).toLocaleString()}</p>}
-                    </div>
-                  </td>
-                </tr>
-              )}
-            </React.Fragment>
+            <tr key={r.record_id} onDoubleClick={() => setSelectedRecord(r)}>
+              <td>{r.record_id}</td>
+              <td>{r.Student?.full_name} ({r.Student?.student_number})</td>
+              <td>{r.Book?.title}</td>
+              <td>{r.User?.username}</td>
+              <td>{r.borrow_date ? new Date(r.borrow_date).toLocaleDateString() : '-'}</td>
+              <td>{r.due_date ? new Date(r.due_date).toLocaleDateString() : '-'}</td>
+              <td>{r.returned ? 'Yes' : 'No'}</td>
+            </tr>
           ))}
         </tbody>
       </table>
+
+      {/* Modal for Record Details */}
+      {selectedRecord && (
+        <div className="modal">
+          <div className="modal-content">
+            <h2>Borrow Record #{selectedRecord.record_id}</h2>
+            <p><strong>Student:</strong> {selectedRecord.Student?.full_name} ({selectedRecord.Student?.student_number})</p>
+            <p><strong>Book:</strong> {selectedRecord.Book?.title}</p>
+            <p><strong>Librarian:</strong> {selectedRecord.User?.username}</p>
+            <p><strong>Borrow Date:</strong> {selectedRecord.borrow_date ? new Date(selectedRecord.borrow_date).toLocaleString() : '-'}</p>
+            <p><strong>Due Date:</strong> {selectedRecord.due_date ? new Date(selectedRecord.due_date).toLocaleString() : '-'}</p>
+            <p><strong>Status:</strong> {selectedRecord.returned ? 'Returned' : 'Borrowed'}</p>
+            <button onClick={() => setSelectedRecord(null)}>Close</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

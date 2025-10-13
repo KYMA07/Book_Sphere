@@ -1,8 +1,7 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import '../css/login.css';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from './AuthContext';
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -10,7 +9,6 @@ function Login() {
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
   const navigate = useNavigate();
-  const { setUser } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,28 +19,33 @@ function Login() {
         password,
       });
 
-      const { token, user } = res.data;
-      const role = user.role.toLowerCase();
-
-      localStorage.setItem('token', token);
-      localStorage.setItem('role', role);
-      setUser({ ...user, token });
-
-      setMessage(`Login successful! Welcome back, ${user.username}`);
+      // ✅ Success
+      setMessage('Login successful! Welcome back ');
       setMessageType('success');
+      localStorage.setItem('token', res.data.token);
+
+      // Get user role from backend response
+      const role = res.data.user.role.toLowerCase();
+      localStorage.setItem('role', role);
 
       setTimeout(() => {
-        if (role === 'admin' || role === 'librarian') {
-          navigate('/dashboard'); // ✅ both roles go to dashboard
+        if (role === 'admin') {
+          navigate('/home');
+        } else if (role === 'librarian') {
+          navigate('/librarian');
         } else if (role === 'student') {
           navigate('/student');
         } else {
           navigate('/');
         }
       }, 1000);
+
     } catch (err) {
-      const errorMsg = err.response?.data?.message || 'Login failed. Please try again.';
-      setMessage(errorMsg);
+      if (err.response) {
+        setMessage(err.response.data.message || 'Login failed');
+      } else {
+        setMessage('Server error. Please try again later.');
+      }
       setMessageType('error');
     }
   };
@@ -50,15 +53,23 @@ function Login() {
   return (
     <div className="container">
       <div className="overlay"></div>
+
       <div className="login-section">
         <div className="title-group">
           <h1 className="brand-title">BOOKSPHERE</h1>
           <p className="tagline">WHERE EVERY PAGE OPENS A NEW WORLD</p>
         </div>
+
         <div className="login-box">
           <h2>Welcome Back</h2>
           <p className="subtitle">Log in to Continue your Reading Journey</p>
-          {message && <div className={`message ${messageType}`}>{message}</div>}
+
+          {message && (
+            <div className={`message ${messageType}`}>
+              {message}
+            </div>
+          )}
+
           <form className="login-form" onSubmit={handleSubmit}>
             <input
               type="text"
