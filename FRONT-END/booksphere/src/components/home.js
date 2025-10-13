@@ -61,40 +61,17 @@ export default function Home() {
 
       {/* Foreground content */}
       <div className="content-wrap">
-        {/* Header */}
-        <header className="header">
-          <div className="brand-group">
-            <div className="logo">BookSphere</div>
-            <div className="tagline-in-header">Where Every Page Opens a New World</div>
-          </div>
-          <nav className="nav-links">
-            <a href="#home">Home</a>
-            <a href="#books">Books</a>
-            <a href="#about">About</a>
-            <a href="#contact">Contact</a>
-          </nav>
-        </header>
-
-        {/* Centered Greeting Title */}
+       
         <main className="hero">
           <h1 className="greeting-title magic-hover">
-           welcome ahhh ang hirap
+           Booksphere 
           </h1>
           <p className="greeting-sub">
-            hogwarts yarn
+            instructions etc
           </p>
         </main>
 
-        {/* Footer */}
-        <footer className="footer">
-          <div className="footer-content">
-            <span>&copy; 2025 BookSphere Inc. All rights reserved.</span>
-            <div>
-              <a href="#privacy" className="footer-link">Privacy Policy</a>
-              <a href="#terms" className="footer-link">Terms of Service</a>
-            </div>
-          </div>
-        </footer>
+       
       </div>
     </div>
   );

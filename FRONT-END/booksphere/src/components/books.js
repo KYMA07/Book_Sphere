@@ -12,6 +12,14 @@ function Books() {
   const [selectedBook, setSelectedBook] = useState(null);
   const [showBorrowForm, setShowBorrowForm] = useState(false);
   const [studentNumber, setStudentNumber] = useState('');
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newBook, setNewBook] = useState({
+    title: '',
+    author: '',
+    category: '',
+    publication_year: '',
+    isbn: ''
+  });
 
   const role = (localStorage.getItem('role') || '').toLowerCase();
   const userId = localStorage.getItem('user_id');
@@ -78,6 +86,25 @@ function Books() {
     setShowBorrowForm(true);
   };
 
+  const submitNewBook = async () => {
+    try {
+      const res = await axios.post('http://localhost:5000/books', newBook);
+      alert(`✅ ${res.data.message || 'Book added successfully'}`);
+      fetchBooks();
+      setShowAddModal(false);
+      setNewBook({
+        title: '',
+        author: '',
+        category: '',
+        publication_year: '',
+        isbn: ''
+      });
+    } catch (err) {
+      const msg = err.response?.data?.message || err.response?.data?.error || 'Add book failed';
+      alert(`❌ ${msg}`);
+    }
+  };
+
   const submitBorrow = async () => {
     const bookId = selectedBook?.book_id;
     const librarianId = role === 'librarian' || role === 'admin' ? userId : null;
@@ -141,6 +168,7 @@ function Books() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
+        
 
         <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
           <option value="book_id">Sort by ID</option>
@@ -161,6 +189,10 @@ function Books() {
           <option value="borrowed">Borrowed</option>
           <option value="lost">Lost</option>
         </select>
+
+        {(role === 'librarian' || role === 'admin') && (
+          <button onClick={() => setShowAddModal(true)}>➕ Add Book</button>
+        )}
       </div>
 
       <table className="books-table">
@@ -219,6 +251,46 @@ function Books() {
             )}
 
             <button onClick={() => setSelectedBook(null)}>Close</button>
+          </div>
+        </div>
+      )}
+
+      {showAddModal && (
+        <div className="modal">
+          <div className="modal-content">
+            <h2>Add New Book</h2>
+            <input
+              type="text"
+              placeholder="Title"
+              value={newBook.title}
+              onChange={(e) => setNewBook({ ...newBook, title: e.target.value })}
+            />
+            <input
+              type="text"
+              placeholder="Author"
+              value={newBook.author}
+              onChange={(e) => setNewBook({ ...newBook, author: e.target.value })}
+            />
+            <input
+              type="text"
+              placeholder="Category"
+              value={newBook.category}
+              onChange={(e) => setNewBook({ ...newBook, category: e.target.value })}
+            />
+            <input
+              type="number"
+              placeholder="Publication Year"
+              value={newBook.publication_year}
+              onChange={(e) => setNewBook({ ...newBook, publication_year: e.target.value })}
+            />
+            <input
+              type="text"
+              placeholder="ISBN"
+              value={newBook.isbn}
+              onChange={(e) => setNewBook({ ...newBook, isbn: e.target.value })}
+            />
+            <button onClick={submitNewBook}>Confirm Add</button>
+            <button onClick={() => setShowAddModal(false)}>Cancel</button>
           </div>
         </div>
       )}
