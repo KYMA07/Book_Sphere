@@ -1,4 +1,4 @@
-import BorrowRecord from '../models/borrowModel.js';
+import { BorrowRecord } from '../models/borrowModel.js';
 import Book from '../models/bookModel.js';
 import Student from '../models/studentModel.js';
 import User from '../models/userModel.js';
@@ -7,32 +7,26 @@ import { Op } from 'sequelize';
 // Borrow a book
 export const borrowBook = async (req, res) => {
   try {
-    const { student_number, book_id, librarian_id } = req.body;
+    const { student_number, book_id, staff_id } = req.body;
 
-    // Resolve student_id from student_number
     const student = await Student.findOne({ where: { student_number } });
-    if (!student) {
-      return res.status(404).json({ message: 'Student not found' });
-    }
+    if (!student) return res.status(404).json({ message: 'Student not found' });
 
     const student_id = student.student_id;
 
-    // Check if book is available
     const book = await Book.findByPk(book_id);
     if (!book || book.status !== 'available') {
       return res.status(400).json({ message: 'Book not available' });
     }
 
-    // Compute borrow_date and due_date (7 days later)
     const borrowDate = new Date();
     const dueDate = new Date(borrowDate);
     dueDate.setDate(dueDate.getDate() + 7);
 
-    // Create borrow record
     const record = await BorrowRecord.create({
       student_id,
       book_id,
-      librarian_id,
+      staff_id,
       borrow_date: borrowDate,
       due_date: dueDate,
       status: 'borrowed'
@@ -84,7 +78,6 @@ export const getBorrowRecordsFiltered = async (req, res) => {
     const { range, status } = req.query;
     const where = {};
 
-    // Date filtering
     if (range && range !== 'overall') {
       const now = new Date();
       let start;
@@ -107,7 +100,6 @@ export const getBorrowRecordsFiltered = async (req, res) => {
       if (start) where.borrow_date = { [Op.gte]: start };
     }
 
-    // Status filtering
     if (status) {
       where.status = status;
     }

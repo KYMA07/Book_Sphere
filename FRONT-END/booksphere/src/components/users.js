@@ -97,8 +97,7 @@ function Users() {
             required
           />
           <select name="role" value={form.role} onChange={handleChange}>
-            <option value="Admin">Admin</option>
-            <option value="Librarian">Librarian</option>
+            <option value="Admin">Staff</option>
             <option value="Student">Student</option>
           </select>
           <button type="submit">Save</button>

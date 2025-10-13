@@ -26,7 +26,6 @@ function Books() {
   const role = (localStorage.getItem('role') || '').toLowerCase();
   const userId = localStorage.getItem('user_id');
 
-  // Auto-fill studentNumber for logged-in students
   useEffect(() => {
     if (role === 'student') {
       setStudentNumber(userId); // assuming user_id is student_number for students
@@ -51,14 +50,14 @@ function Books() {
     }
   };
 
- useEffect(() => {
-  fetchBooks();
-  fetchBorrowRecords();
-}, []);
+  useEffect(() => {
+    fetchBooks();
+    fetchBorrowRecords();
+  }, []);
 
-useEffect(() => {
-  setCurrentPage(1);
-}, [search, filterCategory, filterStatus]);
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, filterCategory, filterStatus]);
 
   const filteredBooks = books
     .filter((b) =>
@@ -113,15 +112,10 @@ useEffect(() => {
 
   const submitBorrow = async () => {
     const bookId = selectedBook?.book_id;
-    const librarianId = role === 'librarian' || role === 'admin' ? userId : null;
+    const staffId = role === 'staff' ? userId : null;
 
-    if (!studentNumber || !bookId || !librarianId) {
-      console.log('Borrow payload:', {
-        student_number: studentNumber,
-        book_id: bookId,
-        librarian_id: librarianId
-      });
-      alert('❌ Missing required fields: student number, book ID, or librarian ID.');
+    if (!studentNumber || !bookId || !staffId) {
+      alert('❌ Missing required fields: student number, book ID, or staff ID.');
       return;
     }
 
@@ -129,7 +123,7 @@ useEffect(() => {
       const res = await axios.post('http://localhost:5000/borrow/borrow', {
         student_number: studentNumber,
         book_id: bookId,
-        librarian_id: librarianId,
+        staff_id: staffId,
       });
 
       alert(`✅ ${res.data.message}`);
@@ -163,9 +157,32 @@ useEffect(() => {
     }
   };
 
+  const handleExportBooks = () => {
+    const csv = [
+      ['Book ID', 'Title', 'Author', 'Category', 'Year', 'ISBN', 'Status'],
+      ...filteredBooks.map(b => [
+        b.book_id, b.title, b.author, b.category, b.publication_year, b.isbn, b.status
+      ])
+    ].map(row => row.join(',')).join('\n');
+
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'books.csv';
+    link.click();
+  };
+
   return (
     <div className="books-page">
       <h1>Books</h1>
+
+      <div className="book-stats">
+        <p>Total Books: {books.length}</p>
+        <p>Available: {books.filter(b => b.status === 'available').length}</p>
+        <p>Borrowed: {books.filter(b => b.status === 'borrowed').length}</p>
+        <p>Reserved: {books.filter(b => b.status === 'reserved').length}</p>
+        <button onClick={handleExportBooks}>Export CSV</button>
+      </div>
 
       <div className="controls">
         <input
@@ -174,7 +191,6 @@ useEffect(() => {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        
 
         <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
           <option value="book_id">Sort by ID</option>
@@ -209,18 +225,19 @@ useEffect(() => {
         </thead>
         <tbody>
           {filteredBooks
-          .slice((currentPage - 1) * booksPerPage, currentPage * booksPerPage)
-          .map((book) => (
-            <tr key={book.book_id} onDoubleClick={() => handleDoubleClick(book)}>
-              <td>{book.book_id}</td>
-              <td>{book.title}</td>
-              <td>{book.author}</td>
-              <td>{book.category}</td>
-              <td>{book.status}</td>
-            </tr>
-          ))}
+            .slice((currentPage - 1) * booksPerPage, currentPage * booksPerPage)
+            .map((book) => (
+              <tr key={book.book_id} onDoubleClick={() => handleDoubleClick(book)}>
+                <td>{book.book_id}</td>
+                <td>{book.title}</td>
+                <td>{book.author}</td>
+                <td>{book.category}</td>
+                <td>{book.status}</td>
+              </tr>
+            ))}
         </tbody>
       </table>
+
       <div className="pagination">
         <button
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
@@ -255,7 +272,7 @@ useEffect(() => {
             <p><strong>ISBN:</strong> {selectedBook.isbn}</p>
             <p><strong>Status:</strong> {selectedBook.status}</p>
 
-            {( role === 'librarian') && (
+            {role === 'staff' && (
               <>
                 {selectedBook.status === 'available' && !showBorrowForm && (
                   <button onClick={handleBorrowClick}>Borrow</button>
@@ -321,6 +338,9 @@ useEffect(() => {
               onChange={(e) => setNewBook({ ...newBook, isbn: e.target.value })}
             />
             <button onClick={submitNewBook}>Confirm Add</button>
+            <button onClick={() => setNewBook({
+              title: '', author: '', category: '', publication_year: '', isbn: ''
+            })}>Reset Form</button>
             <button onClick={() => setShowAddModal(false)}>Cancel</button>
           </div>
         </div>

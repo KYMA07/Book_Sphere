@@ -6,16 +6,17 @@ import sequelize from "./src/database/database.js";
 import bookRoutes from "./src/routes/bookRoutes.js";
 import userRoutes from "./src/routes/userRoutes.js";
 import borrowRoutes from "./src/routes/BorrowRoutes.js";
+import appointRoutes from "./src/routes/appointRoutes.js"; // ✅ NEW
 
 dotenv.config();
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-
 app.use("/books", bookRoutes);
 app.use("/user", userRoutes);
 app.use("/borrow", borrowRoutes);
+app.use("/appointments", appointRoutes); // ✅ NEW
 
 const PORT = process.env.PORT || 5000;
 
@@ -26,4 +27,3 @@ sequelize.sync()
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-

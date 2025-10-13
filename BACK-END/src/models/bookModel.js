@@ -8,7 +8,7 @@ const Book = sequelize.define('Book', {
     primaryKey: true
   },
   title: {
-    type: DataTypes.STRING(200),// this is like VARCHAR in the sql 
+    type: DataTypes.STRING(200),
     allowNull: false
   },
   author: {
@@ -20,7 +20,7 @@ const Book = sequelize.define('Book', {
     allowNull: true
   },
   publication_year: {
-    type: DataTypes.INTEGER, // YEAR(4) can just be INTEGER in Sequelize
+    type: DataTypes.INTEGER,
     allowNull: true
   },
   isbn: {
@@ -28,7 +28,14 @@ const Book = sequelize.define('Book', {
     allowNull: true
   },
   status: {
-    type: DataTypes.ENUM('available', 'borrowed', 'lost'),
+    type: DataTypes.ENUM(
+      'available',
+      'borrowed',
+      'lost',
+      'reserved',
+      'ready_for_pickup',
+      'awaiting_return'
+    ),
     defaultValue: 'available'
   },
   created_at: {
@@ -41,4 +48,3 @@ const Book = sequelize.define('Book', {
 });
 
 export default Book;
-    

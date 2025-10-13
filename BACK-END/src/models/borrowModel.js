@@ -4,7 +4,7 @@ import Student from './studentModel.js';
 import Book from './bookModel.js';
 import User from './userModel.js';
 
-const BorrowRecord = sequelize.define('BorrowRecord', {
+export const BorrowRecord = sequelize.define('BorrowRecord', {
   record_id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -26,13 +26,17 @@ const BorrowRecord = sequelize.define('BorrowRecord', {
       key: 'book_id'
     }
   },
-  librarian_id: {
+  staff_id: {
     type: DataTypes.INTEGER,
     allowNull: true,
     references: {
       model: User,
       key: 'user_id'
     }
+  },
+  source: {
+    type: DataTypes.ENUM('manual', 'appointment'),
+    defaultValue: 'manual'
   },
   borrow_date: {
     type: DataTypes.DATE,
@@ -46,6 +50,10 @@ const BorrowRecord = sequelize.define('BorrowRecord', {
     type: DataTypes.DATE,
     allowNull: true
   },
+  confirmed_at: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW
+  },
   status: {
     type: DataTypes.ENUM('borrowed', 'returned', 'overdue', 'lost'),
     defaultValue: 'borrowed'
@@ -55,14 +63,12 @@ const BorrowRecord = sequelize.define('BorrowRecord', {
   timestamps: false
 });
 
-// Relationships
+// Associations
 Student.hasMany(BorrowRecord, { foreignKey: 'student_id' });
 BorrowRecord.belongsTo(Student, { foreignKey: 'student_id' });
 
 Book.hasMany(BorrowRecord, { foreignKey: 'book_id' });
 BorrowRecord.belongsTo(Book, { foreignKey: 'book_id' });
 
-User.hasMany(BorrowRecord, { foreignKey: 'librarian_id' });
-BorrowRecord.belongsTo(User, { foreignKey: 'librarian_id' });
-
-export default BorrowRecord;  
+User.hasMany(BorrowRecord, { foreignKey: 'staff_id' });
+BorrowRecord.belongsTo(User, { foreignKey: 'staff_id' });

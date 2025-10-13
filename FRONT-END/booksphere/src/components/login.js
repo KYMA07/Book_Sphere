@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
 
 function Login() {
-  const [username, setUsername] = useState('');
+  const [usernameOrEmail, setUsernameOrEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
@@ -17,17 +17,16 @@ function Login() {
 
     try {
       const res = await axios.post('http://localhost:5000/user/login', {
-        username,
-        password,
+        username: usernameOrEmail,
+        password: password
       });
 
       const { token, user } = res.data;
       const role = user.role.toLowerCase();
 
-      // Store essential user info
       localStorage.setItem('token', token);
       localStorage.setItem('role', role);
-      localStorage.setItem('user_id', user.user_id); // ✅ Needed for borrowing
+      localStorage.setItem('user_id', user.user_id);
       localStorage.setItem('username', user.username);
 
       setUser({ ...user, token });
@@ -36,7 +35,7 @@ function Login() {
       setMessageType('success');
 
       setTimeout(() => {
-        navigate('/home'); // ✅ All roles land on home
+        navigate('/home');
       }, 1000);
     } catch (err) {
       const errorMsg = err.response?.data?.message || 'Login failed. Please try again.';
@@ -61,8 +60,8 @@ function Login() {
             <input
               type="text"
               placeholder="Username or Email"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              value={usernameOrEmail}
+              onChange={(e) => setUsernameOrEmail(e.target.value)}
               required
             />
             <input
@@ -74,6 +73,9 @@ function Login() {
             />
             <button type="submit" className="login-btn">Login</button>
             <div className="divider"></div>
+            <button type="button" className="register-btn" onClick={() => navigate('/signup')}>
+              Don't have an account? Sign Up
+            </button>
           </form>
         </div>
       </div>

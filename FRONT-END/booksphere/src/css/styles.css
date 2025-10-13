@@ -458,7 +458,21 @@ body { font-family: "Playfair Display", serif; background: var(--bg-deep); color
 .footer-link:hover{
   color:var(--gold);
 }
+.logout-x {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #fff;
+  cursor: pointer;
+  z-index: 10;
+}
 
+.logout-x:hover {
+  color: #ff4d4d;
+}
 /* ===== responsive tweaks ===== */
 @media (max-width:900px){
   .greeting-title{ font-size:1.8rem; }

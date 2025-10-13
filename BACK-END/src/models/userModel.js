@@ -21,7 +21,7 @@ const User = sequelize.define('User', {
     allowNull: true
   },
   role: {
-    type: DataTypes.ENUM('Admin', 'Librarian', 'Student'),
+    type: DataTypes.ENUM('Staff', 'Student'), // merged Admin and Librarian into Staff
     allowNull: true
   },
   created_at: {

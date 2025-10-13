@@ -1,5 +1,6 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../database/database.js';
+import User from './userModel.js';
 
 const Student = sequelize.define('Student', {
   student_id: {
@@ -31,7 +32,17 @@ const Student = sequelize.define('Student', {
   created_at: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW
+  },
+  user_id: {
+  type: DataTypes.INTEGER,
+  allowNull: true,
+  unique: true,
+  references: {
+    model: User,
+    key: 'user_id'
   }
+}
+  
 }, {
   tableName: 'students',
   timestamps: false

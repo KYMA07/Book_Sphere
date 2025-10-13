@@ -4,6 +4,7 @@ import '../css/dashboard.css';
 
 function Dashboard() {
   const [allRecords, setAllRecords] = useState([]);
+  const [appointments, setAppointments] = useState([]);
   const [records, setRecords] = useState([]);
   const [range, setRange] = useState('overall');
   const [status, setStatus] = useState('');
@@ -24,12 +25,11 @@ function Dashboard() {
       const res = await axios.get(url, { params });
       setRecords(res.data);
 
-      if (url === 'http://localhost:5000/borrow') {
-        setAllRecords(res.data);
-      } else {
-        const fullRes = await axios.get('http://localhost:5000/borrow');
-        setAllRecords(fullRes.data);
-      }
+      const fullRes = await axios.get('http://localhost:5000/borrow');
+      setAllRecords(fullRes.data);
+
+      const appointRes = await axios.get('http://localhost:5000/appointments');
+      setAppointments(appointRes.data);
     } catch (err) {
       console.error("Error fetching records:", err);
     }
@@ -42,6 +42,31 @@ function Dashboard() {
   const borrowedCount = allRecords.filter(r => r.status === 'borrowed').length;
   const returnedCount = allRecords.filter(r => r.status === 'returned').length;
   const overdueCount = allRecords.filter(r => r.status === 'overdue').length;
+  const appointmentBorrowed = allRecords.filter(r => r.source === 'appointment').length;
+  const manualBorrowed = allRecords.filter(r => r.source === 'manual').length;
+  const activeStudents = new Set(allRecords.map(r => r.student_id)).size;
+  const pendingAppointments = appointments.filter(a => a.status === 'pending').length;
+
+  const handleExport = () => {
+    const csv = [
+      ['Record ID', 'Student', 'Book', 'Librarian', 'Borrow Date', 'Due Date', 'Status'],
+      ...records.map(r => [
+        r.record_id,
+        `${r.Student?.full_name} (${r.Student?.student_number})`,
+        r.Book?.title,
+        r.User?.username,
+        r.borrow_date ? new Date(r.borrow_date).toLocaleDateString() : '-',
+        r.due_date ? new Date(r.due_date).toLocaleDateString() : '-',
+        r.status
+      ])
+    ].map(row => row.join(',')).join('\n');
+
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'borrow_records.csv';
+    link.click();
+  };
 
   return (
     <div className="dashboard-page">
@@ -55,6 +80,7 @@ function Dashboard() {
           <option value="month">This Month</option>
           <option value="year">This Year</option>
         </select>
+        <button onClick={handleExport}>Export CSV</button>
       </div>
 
       <div className="summary-cards">
@@ -67,6 +93,10 @@ function Dashboard() {
         <button onClick={() => setStatus(status === 'overdue' ? '' : 'overdue')}>
           Books Overdue: {overdueCount}
         </button>
+        <button disabled>Borrowed via Appointments: {appointmentBorrowed}</button>
+        <button disabled>Borrowed Manually: {manualBorrowed}</button>
+        <button disabled>Active Students: {activeStudents}</button>
+        <button disabled>Pending Appointments: {pendingAppointments}</button>
       </div>
 
       <table className="records-table">
@@ -97,16 +127,15 @@ function Dashboard() {
           ))}
         </tbody>
       </table>
-            <div className="pagination">
+
+      <div className="pagination">
         <button
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
         >
           ◀ Prev
         </button>
-
         <span>Page {currentPage} of {Math.ceil(records.length / recordsPerPage)}</span>
-
         <button
           onClick={() =>
             setCurrentPage((prev) =>

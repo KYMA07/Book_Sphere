@@ -23,3 +23,11 @@ export function requireRole(role) {
     next();
   };
 }
+
+// Helper for Staff role (merged Admin and Librarian)
+export function requireStaff(req, res, next) {
+  if (!req.user || req.user.role !== 'Staff') {
+    return res.status(403).json({ message: 'Forbidden: Staff only' });
+  }
+  next();
+}
