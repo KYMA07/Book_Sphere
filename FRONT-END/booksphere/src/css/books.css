@@ -28,6 +28,10 @@
 html,body,#root,.magic-library { height:100%; }
 body { font-family: "Playfair Display", serif; background: var(--bg-deep); color:var(--parchment); }
 
+body{
+    margin-top: 60px;
+    margin-left: 20px;
+}
 /* ===== overall layers ===== */
 .magic-library { position:relative; overflow:hidden; }
 

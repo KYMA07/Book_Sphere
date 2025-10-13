@@ -22,7 +22,10 @@
   /* spotlight size */
   --spot-size: 360px;
 }
-
+body{
+    margin-top: 60px;
+   
+}
 /* ===== reset base ===== */
 * { box-sizing: border-box; margin:0; padding:0; }
 html,body,#root,.magic-library { height:100%; }
