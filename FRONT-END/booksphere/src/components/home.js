@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React, { useEffect, useRef } from "react";
 import "../css/styles.css";
 
@@ -96,23 +95,7 @@ export default function Home() {
             </div>
           </div>
         </footer>
-=======
-import React from 'react';
-import '../css/styles.css';
-
-function Home() {
-  return (
-    <div className="home-page">
-      <div className="container">
-        <h1>Welcome to BookSphere</h1>
-        <p className="subtitle">Where every page opens a new world</p>
->>>>>>> parent of be66f92 (debugging & changing the 1st pages for admin and lib)
       </div>
     </div>
   );
 }
-<<<<<<< HEAD
-=======
-
-export default Home;
->>>>>>> parent of be66f92 (debugging & changing the 1st pages for admin and lib)
