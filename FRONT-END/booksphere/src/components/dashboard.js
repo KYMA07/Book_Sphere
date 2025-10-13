@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import '../css/styles.css';
+import '../css/dashboard.css';
 
 function Dashboard() {
   const [allRecords, setAllRecords] = useState([]);
@@ -22,7 +22,6 @@ function Dashboard() {
       const res = await axios.get(url, { params });
       setRecords(res.data);
 
-      // Always fetch full dataset for accurate counts
       if (url === 'http://localhost:5000/borrow') {
         setAllRecords(res.data);
       } else {
@@ -38,7 +37,6 @@ function Dashboard() {
     fetchRecords();
   }, [range, status]);
 
-  // Accurate counts from full dataset
   const borrowedCount = allRecords.filter(r => r.status === 'borrowed').length;
   const returnedCount = allRecords.filter(r => r.status === 'returned').length;
   const overdueCount = allRecords.filter(r => r.status === 'overdue').length;
@@ -47,7 +45,6 @@ function Dashboard() {
     <div className="dashboard-page">
       <h1>Library Dashboard</h1>
 
-      {/* Date Range Selector */}
       <div className="controls">
         <select value={range} onChange={(e) => setRange(e.target.value)}>
           <option value="overall">Overall</option>
@@ -58,7 +55,6 @@ function Dashboard() {
         </select>
       </div>
 
-      {/* Summary Cards */}
       <div className="summary-cards">
         <button onClick={() => setStatus(status === 'borrowed' ? '' : 'borrowed')}>
           Books Borrowed: {borrowedCount}
@@ -71,7 +67,6 @@ function Dashboard() {
         </button>
       </div>
 
-      {/* Records Table */}
       <table className="records-table">
         <thead>
           <tr>
@@ -86,37 +81,36 @@ function Dashboard() {
         </thead>
         <tbody>
           {records.map((r) => (
-            <React.Fragment key={r.record_id}>
-              <tr onClick={() => setSelectedRecord(selectedRecord?.record_id === r.record_id ? null : r)}>
-                <td>{r.record_id}</td>
-                <td>{r.Student?.full_name} ({r.Student?.student_number})</td>
-                <td>{r.Book?.title}</td>
-                <td>{r.User?.username}</td>
-                <td>{r.borrow_date ? new Date(r.borrow_date).toLocaleDateString() : '-'}</td>
-                <td>{r.due_date ? new Date(r.due_date).toLocaleDateString() : '-'}</td>
-                <td>{r.status}</td>
-              </tr>
-
-              {/* Inline expandable details */}
-              {selectedRecord?.record_id === r.record_id && (
-                <tr className="record-details-row">
-                  <td colSpan="7">
-                    <div className="record-details">
-                      <p><strong>Student:</strong> {r.Student?.full_name} ({r.Student?.student_number})</p>
-                      <p><strong>Book:</strong> {r.Book?.title}</p>
-                      <p><strong>Librarian:</strong> {r.User?.username}</p>
-                      <p><strong>Borrow Date:</strong> {r.borrow_date ? new Date(r.borrow_date).toLocaleString() : '-'}</p>
-                      <p><strong>Due Date:</strong> {r.due_date ? new Date(r.due_date).toLocaleString() : '-'}</p>
-                      <p><strong>Status:</strong> {r.status}</p>
-                      {r.return_date && <p><strong>Return Date:</strong> {new Date(r.return_date).toLocaleString()}</p>}
-                    </div>
-                  </td>
-                </tr>
-              )}
-            </React.Fragment>
+            <tr key={r.record_id} onClick={() => setSelectedRecord(r)}>
+              <td>{r.record_id}</td>
+              <td>{r.Student?.full_name} ({r.Student?.student_number})</td>
+              <td>{r.Book?.title}</td>
+              <td>{r.User?.username}</td>
+              <td>{r.borrow_date ? new Date(r.borrow_date).toLocaleDateString() : '-'}</td>
+              <td>{r.due_date ? new Date(r.due_date).toLocaleDateString() : '-'}</td>
+              <td>{r.status}</td>
+            </tr>
           ))}
         </tbody>
       </table>
+
+      {selectedRecord && (
+        <div className="modal">
+          <div className="modal-content">
+            <h2>Record Details</h2>
+            <p><strong>Student:</strong> {selectedRecord.Student?.full_name} ({selectedRecord.Student?.student_number})</p>
+            <p><strong>Book:</strong> {selectedRecord.Book?.title}</p>
+            <p><strong>Librarian:</strong> {selectedRecord.User?.username}</p>
+            <p><strong>Borrow Date:</strong> {selectedRecord.borrow_date ? new Date(selectedRecord.borrow_date).toLocaleString() : '-'}</p>
+            <p><strong>Due Date:</strong> {selectedRecord.due_date ? new Date(selectedRecord.due_date).toLocaleString() : '-'}</p>
+            <p><strong>Status:</strong> {selectedRecord.status}</p>
+            {selectedRecord.return_date && (
+              <p><strong>Return Date:</strong> {new Date(selectedRecord.return_date).toLocaleString()}</p>
+            )}
+            <button onClick={() => setSelectedRecord(null)}>Close</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
