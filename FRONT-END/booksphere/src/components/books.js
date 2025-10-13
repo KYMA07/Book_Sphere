@@ -20,6 +20,8 @@ function Books() {
     publication_year: '',
     isbn: ''
   });
+  const [currentPage, setCurrentPage] = useState(1);
+  const booksPerPage = 15;
 
   const role = (localStorage.getItem('role') || '').toLowerCase();
   const userId = localStorage.getItem('user_id');
@@ -49,10 +51,14 @@ function Books() {
     }
   };
 
-  useEffect(() => {
-    fetchBooks();
-    fetchBorrowRecords();
-  }, []);
+ useEffect(() => {
+  fetchBooks();
+  fetchBorrowRecords();
+}, []);
+
+useEffect(() => {
+  setCurrentPage(1);
+}, [search, filterCategory, filterStatus]);
 
   const filteredBooks = books
     .filter((b) =>
@@ -202,7 +208,9 @@ function Books() {
           </tr>
         </thead>
         <tbody>
-          {filteredBooks.map((book) => (
+          {filteredBooks
+          .slice((currentPage - 1) * booksPerPage, currentPage * booksPerPage)
+          .map((book) => (
             <tr key={book.book_id} onDoubleClick={() => handleDoubleClick(book)}>
               <td>{book.book_id}</td>
               <td>{book.title}</td>
@@ -213,6 +221,29 @@ function Books() {
           ))}
         </tbody>
       </table>
+      <div className="pagination">
+        <button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+        >
+          ◀ Prev
+        </button>
+
+        <span>
+          Page {currentPage} of {Math.ceil(filteredBooks.length / booksPerPage)}
+        </span>
+
+        <button
+          onClick={() =>
+            setCurrentPage((prev) =>
+              prev < Math.ceil(filteredBooks.length / booksPerPage) ? prev + 1 : prev
+            )
+          }
+          disabled={currentPage >= Math.ceil(filteredBooks.length / booksPerPage)}
+        >
+          Next ▶
+        </button>
+      </div>
 
       {selectedBook && (
         <div className="modal">
