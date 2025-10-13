@@ -3,7 +3,7 @@ import sequelize from '../database/database.js';
 
 const Student = sequelize.define('Student', {
   student_id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.STRING(36),
     autoIncrement: true,
     primaryKey: true
   },

@@ -4,30 +4,48 @@ import '../css/books.css';
 
 function Books() {
   const [books, setBooks] = useState([]);
+  const [borrowRecords, setBorrowRecords] = useState([]);
   const [search, setSearch] = useState('');
-  const [sortBy, setSortBy] = useState('book_id'); // default sort
+  const [sortBy, setSortBy] = useState('book_id');
   const [filterCategory, setFilterCategory] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
-  const [selectedBook, setSelectedBook] = useState(null); // for popout
-  const role = (localStorage.getItem('role') || '').toLowerCase();// admin, librarian, student
+  const [selectedBook, setSelectedBook] = useState(null);
+  const [showBorrowForm, setShowBorrowForm] = useState(false);
+  const [studentNumber, setStudentNumber] = useState('');
 
-  console.log("Role in Books.js:", `"${role}"`);
-  
-  // Fetch books
+  const role = (localStorage.getItem('role') || '').toLowerCase();
+  const userId = localStorage.getItem('user_id');
+
+  // Auto-fill studentNumber for logged-in students
+  useEffect(() => {
+    if (role === 'student') {
+      setStudentNumber(userId); // assuming user_id is student_number for students
+    }
+  }, [role, userId]);
+
   const fetchBooks = async () => {
     try {
       const res = await axios.get('http://localhost:5000/books');
       setBooks(res.data);
     } catch (err) {
-      console.error(err);
+      console.error('Error fetching books:', err);
+    }
+  };
+
+  const fetchBorrowRecords = async () => {
+    try {
+      const res = await axios.get('http://localhost:5000/borrow');
+      setBorrowRecords(res.data);
+    } catch (err) {
+      console.error('Error fetching borrow records:', err);
     }
   };
 
   useEffect(() => {
     fetchBooks();
+    fetchBorrowRecords();
   }, []);
 
-  // Search + filter + sort
   const filteredBooks = books
     .filter((b) =>
       [b.title, b.author, b.isbn, b.book_id.toString()]
@@ -38,26 +56,77 @@ function Books() {
     .sort((a, b) => {
       if (sortBy === 'title') return a.title.localeCompare(b.title);
       if (sortBy === 'author') return a.author.localeCompare(b.author);
-      return a.book_id - b.book_id; // default
+      return a.book_id - b.book_id;
     });
 
-  // Double click handler
+  const getRecordIdForBook = (bookId) => {
+    const record = borrowRecords.find(r => r.book_id === bookId && r.status === 'borrowed');
+    return record?.record_id;
+  };
+
   const handleDoubleClick = (book) => {
     setSelectedBook(book);
+    setShowBorrowForm(false);
+    if (role === 'student') {
+      setStudentNumber(userId);
+    } else {
+      setStudentNumber('');
+    }
   };
 
-  // Borrow / Return actions
-  const handleBorrow = (book) => {
-    // redirect to borrow form page
-    window.location.href = `/borrow/${book.book_id}`;
+  const handleBorrowClick = () => {
+    setShowBorrowForm(true);
   };
 
-  const handleReturn = async (book) => {
+  const submitBorrow = async () => {
+    const bookId = selectedBook?.book_id;
+    const librarianId = role === 'librarian' || role === 'admin' ? userId : null;
+
+    if (!studentNumber || !bookId || !librarianId) {
+      console.log('Borrow payload:', {
+        student_number: studentNumber,
+        book_id: bookId,
+        librarian_id: librarianId
+      });
+      alert('❌ Missing required fields: student number, book ID, or librarian ID.');
+      return;
+    }
+
     try {
-      await axios.post(`http://localhost:5000/borrow/return/${book.record_id}`);
+      const res = await axios.post('http://localhost:5000/borrow/borrow', {
+        student_number: studentNumber,
+        book_id: bookId,
+        librarian_id: librarianId,
+      });
+
+      alert(`✅ ${res.data.message}`);
       fetchBooks();
+      fetchBorrowRecords();
+      setShowBorrowForm(false);
+      setSelectedBook(null);
+      if (role !== 'student') setStudentNumber('');
     } catch (err) {
-      console.error(err);
+      const msg = err.response?.data?.message || err.response?.data?.error || 'Borrow failed';
+      alert(`❌ ${msg}`);
+    }
+  };
+
+  const handleReturn = async () => {
+    const recordId = getRecordIdForBook(selectedBook.book_id);
+    if (!recordId) {
+      alert('❌ No active borrow record found.');
+      return;
+    }
+
+    try {
+      const res = await axios.put(`http://localhost:5000/borrow/return/${recordId}`);
+      alert(`✅ ${res.data.message || 'Book returned successfully'}`);
+      fetchBooks();
+      fetchBorrowRecords();
+      setSelectedBook(null);
+    } catch (err) {
+      const msg = err.response?.data?.message || err.response?.data?.error || 'Return failed';
+      alert(`❌ ${msg}`);
     }
   };
 
@@ -65,7 +134,6 @@ function Books() {
     <div className="books-page">
       <h1>Books</h1>
 
-      {/* Search + Filters */}
       <div className="controls">
         <input
           type="text"
@@ -95,7 +163,6 @@ function Books() {
         </select>
       </div>
 
-      {/* Books Table */}
       <table className="books-table">
         <thead>
           <tr>
@@ -115,7 +182,6 @@ function Books() {
         </tbody>
       </table>
 
-      {/* Popout Window */}
       {selectedBook && (
         <div className="modal">
           <div className="modal-content">
@@ -126,17 +192,31 @@ function Books() {
             <p><strong>ISBN:</strong> {selectedBook.isbn}</p>
             <p><strong>Status:</strong> {selectedBook.status}</p>
 
-            {/* Role-based actions: Only admin/librarian can borrow/return */}
-            {(role === 'admin' || role === 'librarian') ? (
+            {(role === 'admin' || role === 'librarian') && (
               <>
-                {selectedBook.status === 'available' && (
-                  <button onClick={() => handleBorrow(selectedBook)}>Borrow</button>
+                {selectedBook.status === 'available' && !showBorrowForm && (
+                  <button onClick={handleBorrowClick}>Borrow</button>
                 )}
                 {selectedBook.status === 'borrowed' && (
-                  <button onClick={() => handleReturn(selectedBook)}>Return</button>
+                  <button onClick={handleReturn}>Return</button>
                 )}
               </>
-            ) : null}
+            )}
+
+            {showBorrowForm && (
+              <div className="borrow-form">
+                <h3>Borrow Book</h3>
+                <input
+                  type="text"
+                  placeholder="Student Number"
+                  value={studentNumber}
+                  onChange={(e) => setStudentNumber(e.target.value)}
+                  disabled={role === 'student'}
+                />
+                <button onClick={submitBorrow}>Confirm Borrow</button>
+                <button onClick={() => setShowBorrowForm(false)}>Cancel</button>
+              </div>
+            )}
 
             <button onClick={() => setSelectedBook(null)}>Close</button>
           </div>

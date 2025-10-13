@@ -24,15 +24,19 @@ function Login() {
       const { token, user } = res.data;
       const role = user.role.toLowerCase();
 
+      // Store essential user info
       localStorage.setItem('token', token);
       localStorage.setItem('role', role);
+      localStorage.setItem('user_id', user.user_id); // ✅ Needed for borrowing
+      localStorage.setItem('username', user.username);
+
       setUser({ ...user, token });
 
       setMessage(`Login successful! Welcome back, ${user.username}`);
       setMessageType('success');
 
       setTimeout(() => {
-        navigate('/home'); // ✅ all roles land on home.js
+        navigate('/home'); // ✅ All roles land on home
       }, 1000);
     } catch (err) {
       const errorMsg = err.response?.data?.message || 'Login failed. Please try again.';

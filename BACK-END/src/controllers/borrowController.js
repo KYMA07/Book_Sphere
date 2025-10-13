@@ -7,7 +7,15 @@ import { Op } from 'sequelize';
 // Borrow a book
 export const borrowBook = async (req, res) => {
   try {
-    const { student_id, book_id, librarian_id } = req.body;
+    const { student_number, book_id, librarian_id } = req.body;
+
+    // Resolve student_id from student_number
+    const student = await Student.findOne({ where: { student_number } });
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+
+    const student_id = student.student_id;
 
     // Check if book is available
     const book = await Book.findByPk(book_id);
@@ -20,7 +28,7 @@ export const borrowBook = async (req, res) => {
     const dueDate = new Date(borrowDate);
     dueDate.setDate(dueDate.getDate() + 7);
 
-    // Create borrow record with status = 'borrowed'
+    // Create borrow record
     const record = await BorrowRecord.create({
       student_id,
       book_id,
@@ -30,7 +38,6 @@ export const borrowBook = async (req, res) => {
       status: 'borrowed'
     });
 
-    // Update book status
     await book.update({ status: 'borrowed' });
 
     res.status(201).json({ message: 'Book borrowed successfully', record });
