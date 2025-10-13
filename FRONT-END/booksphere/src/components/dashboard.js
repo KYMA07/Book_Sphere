@@ -8,6 +8,8 @@ function Dashboard() {
   const [range, setRange] = useState('overall');
   const [status, setStatus] = useState('');
   const [selectedRecord, setSelectedRecord] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const recordsPerPage = 15;
 
   const fetchRecords = async () => {
     try {
@@ -80,19 +82,42 @@ function Dashboard() {
           </tr>
         </thead>
         <tbody>
-          {records.map((r) => (
-            <tr key={r.record_id} onClick={() => setSelectedRecord(r)}>
-              <td>{r.record_id}</td>
-              <td>{r.Student?.full_name} ({r.Student?.student_number})</td>
-              <td>{r.Book?.title}</td>
-              <td>{r.User?.username}</td>
-              <td>{r.borrow_date ? new Date(r.borrow_date).toLocaleDateString() : '-'}</td>
-              <td>{r.due_date ? new Date(r.due_date).toLocaleDateString() : '-'}</td>
-              <td>{r.status}</td>
-            </tr>
+          {records
+            .slice((currentPage - 1) * recordsPerPage, currentPage * recordsPerPage)
+            .map((r) => (
+              <tr key={r.record_id} onClick={() => setSelectedRecord(r)}>
+                <td>{r.record_id}</td>
+                <td>{r.Student?.full_name} ({r.Student?.student_number})</td>
+                <td>{r.Book?.title}</td>
+                <td>{r.User?.username}</td>
+                <td>{r.borrow_date ? new Date(r.borrow_date).toLocaleDateString() : '-'}</td>
+                <td>{r.due_date ? new Date(r.due_date).toLocaleDateString() : '-'}</td>
+                <td>{r.status}</td>
+              </tr>
           ))}
         </tbody>
       </table>
+            <div className="pagination">
+        <button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+        >
+          ◀ Prev
+        </button>
+
+        <span>Page {currentPage} of {Math.ceil(records.length / recordsPerPage)}</span>
+
+        <button
+          onClick={() =>
+            setCurrentPage((prev) =>
+              prev < Math.ceil(records.length / recordsPerPage) ? prev + 1 : prev
+            )
+          }
+          disabled={currentPage >= Math.ceil(records.length / recordsPerPage)}
+        >
+          Next ▶
+        </button>
+      </div>
 
       {selectedRecord && (
         <div className="modal">
