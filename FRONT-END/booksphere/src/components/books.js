@@ -192,7 +192,7 @@ function Books() {
             <p><strong>ISBN:</strong> {selectedBook.isbn}</p>
             <p><strong>Status:</strong> {selectedBook.status}</p>
 
-            {(role === 'admin' || role === 'librarian') && (
+            {( role === 'librarian') && (
               <>
                 {selectedBook.status === 'available' && !showBorrowForm && (
                   <button onClick={handleBorrowClick}>Borrow</button>
