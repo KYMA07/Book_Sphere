@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import '../css/styles.css';
 
 function Layout({ role, children }) {
-    
   return (
     <div className="layout">
       <header className="header">
@@ -13,9 +12,6 @@ function Layout({ role, children }) {
         </div>
 
         <nav className="nav-links">
-          {/* Common link */}
-          <Link to="/home">HOME</Link>
-
           {/* Role-specific links */}
           {role === 'admin' && (
             <>
@@ -34,6 +30,7 @@ function Layout({ role, children }) {
 
           {role === 'student' && (
             <>
+              <Link to="/home">HOME</Link>
               <Link to="/books">BOOKS</Link>
             </>
           )}
