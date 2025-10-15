@@ -68,6 +68,7 @@ export const updateAppointmentStatus = async (req, res) => {
         case 'awaiting_return':
           book.status = 'awaiting_return';
           break;
+        // Remove 'approved_return' case, use 'awaiting_return' for approval and 'returned' for confirmation
         case 'returned':
         case 'denied':
           book.status = 'available';

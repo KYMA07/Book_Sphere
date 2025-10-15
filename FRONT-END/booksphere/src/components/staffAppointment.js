@@ -55,7 +55,7 @@ function StaffAppointment() {
   );
 
   const returnRequests = appointments.filter(a =>
-    ['awaiting_return', 'approved_return', 'returned'].includes(a.status)
+    ['awaiting_return', 'returned'].includes(a.status)
   );
 
   const statuses = [
@@ -117,11 +117,11 @@ function StaffAppointment() {
       <h3 className="appointment-subtitle">Borrow Requests</h3>
       <ul className="appointment-list">
         {borrowRequests.map((app) => (
-          <li key={app.appointment_id} className={`appointment-item status-${app.status}`}>
+          <li key={app.appointment_id} className="appointment-item">
             <div>
-              <strong>{app.Book?.title || `Book #${app.book_id}`}</strong> — {app.type} on {formatDate(app.scheduled_date)}<br />
-              Student: {app.Student?.full_name || `#${app.student_id}`} | 
-              <span className={`status-badge ${app.status}`}>{app.status}</span>
+              <strong>{app.Book?.title}</strong> — {app.type} on {formatDate(app.scheduled_date)}<br />
+              Student: {app.Student?.full_name}
+              <span className={`status-badge status-${app.status}`}>{app.status.replace(/_/g, ' ')}</span>
             </div>
             <div className="appointment-actions">
               {app.status === 'pending' && (
@@ -153,11 +153,6 @@ function StaffAppointment() {
             </div>
             <div className="appointment-actions">
               {app.status === 'awaiting_return' && (
-                <button onClick={() => handleAction(app.appointment_id, 'approved_return')}>
-                  Approve Return
-                </button>
-              )}
-              {app.status === 'approved_return' && (
                 <button onClick={() => handleAction(app.appointment_id, 'returned')}>
                   Confirm Returned
                 </button>

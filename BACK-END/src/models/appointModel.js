@@ -49,8 +49,8 @@ const Appointment = sequelize.define('Appointment', {
       'denied',
       'ready_for_pickup',
       'picked_up',
-      'awaiting_return',
-      'returned'
+  'awaiting_return',
+  'returned'
     ),
     defaultValue: 'pending'
   },
