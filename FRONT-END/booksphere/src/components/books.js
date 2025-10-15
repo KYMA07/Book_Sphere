@@ -22,6 +22,8 @@ function Books() {
   });
   const [currentPage, setCurrentPage] = useState(1);
   const booksPerPage = 15;
+  const [showAppointmentForm, setShowAppointmentForm] = useState(false);
+  const [appointmentNote, setAppointmentNote] = useState('');
 
   const role = (localStorage.getItem('role') || '').toLowerCase();
   const userId = localStorage.getItem('user_id');
@@ -109,7 +111,30 @@ function Books() {
       alert(`❌ ${msg}`);
     }
   };
+  const submitAppointment = async () => {
+    if (!studentNumber || !selectedBook?.book_id || !appointmentNote) {
+      alert('❌ Missing required fields.');
+      return;
+    }
 
+    try {
+      const res = await axios.post('http://localhost:5000/appointments', {
+        student_id: studentNumber,
+        book_id: selectedBook.book_id,
+        note: appointmentNote,
+        type: 'borrow',
+        scheduled_date: new Date().toISOString().split('T')[0] // default to today
+      });
+
+      alert(`✅ ${res.data.message || 'Appointment set successfully'}`);
+      setShowAppointmentForm(false);
+      setSelectedBook(null);
+      setAppointmentNote('');
+    } catch (err) {
+      const msg = err.response?.data?.message || err.response?.data?.error || 'Appointment failed';
+      alert(`❌ ${msg}`);
+    }
+  };
   const submitBorrow = async () => {
     const bookId = selectedBook?.book_id;
     const staffId = role === 'staff' ? userId : null;
@@ -282,6 +307,34 @@ function Books() {
                 )}
               </>
             )}
+            {/* Student Appointment Option */}
+            {role === 'student' && (
+              <>
+                {selectedBook.status === 'available' && (
+                  <>
+                    {!showAppointmentForm ? (
+                      <button onClick={() => setShowAppointmentForm(true)}>
+                        Set Appointment
+                      </button>
+                    ) : (
+                      <div className="appointment-form">
+                        <textarea
+                          placeholder="Add a note or preferred time..."
+                          value={appointmentNote}
+                          onChange={(e) => setAppointmentNote(e.target.value)}
+                        />
+                        <button onClick={submitAppointment}>Submit Appointment</button>
+                        <button onClick={() => setShowAppointmentForm(false)}>Cancel</button>
+                      </div>
+                    )}
+                  </>
+                )}
+                {selectedBook.status === 'reserved' && (
+                  <p className="status-note">📚 This book is currently reserved. You’ll be notified when it’s ready for pickup.</p>
+                )}
+              </>
+            )}
+
 
             {showBorrowForm && (
               <div className="borrow-form">
