@@ -225,3 +225,18 @@
   cursor: pointer;
   font-family: 'Cinzel', serif;
 }
+
+.card.warning {
+  background: rgba(200, 50, 50, 0.15);
+  color: #e74c3c;
+  font-weight: bold;
+}
+
+.books-table td[data-status="overdue"] {
+  color: #e74c3c;
+  font-weight: bold;
+}
+
+.books-table tr.penalized {
+  background-color: rgba(200, 50, 50, 0.1);
+}
