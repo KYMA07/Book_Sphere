@@ -68,8 +68,92 @@ body { font-family: "Playfair Display", serif; background: var(--bg-deep); color
   transition: background 120ms linear;
 }
 
+.instructions {
+  max-width: 900px;
+  margin: 60px auto;
+  padding: 30px;
+  background: rgba(28, 20, 16, 0.7);
+  border-radius: 12px;
+  box-shadow: var(--shadow-light);
+  font-family: 'Merriweather', serif;
+  color: var(--text-primary);
+  line-height: 1.6;
+}
 
-/* inner bar with gentle glass */
+.instructions h2 {
+  font-family: "Cinzel", serif;
+  font-size: 1.6rem;
+  color: var(--text-gold);
+  margin-bottom: 15px;
+  text-shadow: var(--glow-gold);
+}
+
+.instructions ul {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 25px;
+}
+
+.instructions li {
+  margin-bottom: 12px;
+  padding-left: 20px;
+  position: relative;
+}
+
+.instructions li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: var(--text-gold);
+  font-size: 1.2rem;
+}
+
+.instructions .reminder {
+  font-style: italic;
+  color: var(--text-secondary);
+  margin-top: 20px;
+  text-align: center;
+}
+.instructions h3 {
+  font-family: "Cinzel", serif;
+  font-size: 1.3rem;
+  color: var(--text-gold);
+  margin: 20px 0 10px;
+  text-shadow: var(--glow-gold);
+}
+
+.instructions p {
+  margin-bottom: 15px;
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+.instructions ul {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 25px;
+}
+
+.instructions li {
+  margin-bottom: 10px;
+  padding-left: 22px;
+  position: relative;
+  line-height: 1.5;
+}
+
+.instructions li::before {
+  content: "›";
+  position: absolute;
+  left: 0;
+  color: var(--text-gold);
+  font-weight: bold;
+}
+
+.instructions em {
+  color: var(--text-gold);
+  font-style: normal;
+  font-weight: 600;
+}
 .crest-inner{
   display:flex;
   align-items:center;
