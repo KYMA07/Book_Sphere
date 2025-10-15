@@ -4,6 +4,19 @@ import Student from '../models/studentModel.js';
 import User from '../models/userModel.js';
 import { Op } from 'sequelize';
 
+// Helper: calculate penalty
+function calculatePenalty(dueDate, status) {
+  if (!dueDate || (status !== 'borrowed' && status !== 'overdue')) return 0;
+
+  const now = new Date();
+  const diffDays = Math.floor((now - dueDate) / (1000 * 60 * 60 * 24));
+
+  if (diffDays > 2) {
+    return (diffDays - 2) * 5; // ₱5/day after 2-day grace
+  }
+  return 0;
+}
+
 // Borrow a book
 export const borrowBook = async (req, res) => {
   try {
@@ -29,7 +42,8 @@ export const borrowBook = async (req, res) => {
       staff_id,
       borrow_date: borrowDate,
       due_date: dueDate,
-      status: 'borrowed'
+      status: 'borrowed',
+      penalty: 0
     });
 
     await book.update({ status: 'borrowed' });
@@ -51,10 +65,17 @@ export const returnBook = async (req, res) => {
       return res.status(400).json({ message: 'Book already returned' });
     }
 
-    await record.update({ status: 'returned', return_date: new Date() });
+    // calculate penalty before updating
+    const penalty = calculatePenalty(record.due_date, record.status);
+
+    await record.update({
+      status: 'returned',
+      return_date: new Date(),
+      penalty
+    });
     await record.Book.update({ status: 'available' });
 
-    res.json({ message: 'Book returned successfully' });
+    res.json({ message: 'Book returned successfully', penalty });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -66,7 +87,14 @@ export const getAllBorrowRecords = async (req, res) => {
     const records = await BorrowRecord.findAll({
       include: [Student, Book, User]
     });
-    res.json(records);
+
+    // recalc penalties on the fly for freshness
+    const updated = records.map(r => {
+      const penalty = calculatePenalty(r.due_date, r.status);
+      return { ...r.toJSON(), penalty };
+    });
+
+    res.json(updated);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -109,7 +137,12 @@ export const getBorrowRecordsFiltered = async (req, res) => {
       include: [Student, Book, User]
     });
 
-    res.json(records);
+    const updated = records.map(r => {
+      const penalty = calculatePenalty(r.due_date, r.status);
+      return { ...r.toJSON(), penalty };
+    });
+
+    res.json(updated);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

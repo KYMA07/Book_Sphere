@@ -57,6 +57,10 @@ export const BorrowRecord = sequelize.define('BorrowRecord', {
   status: {
     type: DataTypes.ENUM('borrowed', 'returned', 'overdue', 'lost'),
     defaultValue: 'borrowed'
+  },
+  penalty: {
+    type: DataTypes.DECIMAL(10, 2),
+    defaultValue: 0
   }
 }, {
   tableName: 'borrow_records',
