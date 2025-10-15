@@ -130,7 +130,7 @@ VALUES
 -- ===============================
 
 -- Change librarian_id to staff_id
-ALTER TABLE borrow_records CHANGE librarian_id staff_id INT;
+ALTER TABLE borrow_records CHANGE librarian_id staff_id INT; 
 
 -- Add foreign key for staff_id
 ALTER TABLE borrow_records ADD FOREIGN KEY (staff_id) REFERENCES users(user_id);
