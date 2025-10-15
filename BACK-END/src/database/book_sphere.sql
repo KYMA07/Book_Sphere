@@ -1,13 +1,16 @@
 USE book_sphere;
 
+-- ===============================
+-- USERS
+-- ===============================
 INSERT IGNORE INTO users (username, password_hash, email, role)
 VALUES 
 ('admin1', 'hashedpass123', 'admin@mail.com', 'Admin'),
 ('lib1', 'hashedpass456', 'librarian@mail.com', 'Librarian');
 
--- ======================
--- INSERT 20 SAMPLE STUDENTS (you can expand to 100)
--- ======================
+-- ===============================
+-- STUDENTS
+-- ===============================
 INSERT IGNORE INTO students (student_number, full_name, course, year_level, email)
 VALUES
 ('2025-001', 'Aaron Dela Cruz', 'BSIT', '11', 'aaron001@mail.com'),
@@ -110,10 +113,11 @@ VALUES
 ('2025-098', 'Uriel Santos', 'BSIT', '11', 'uriel098@mail.com'),
 ('2025-099', 'Vina Mendoza', 'BSCS', '12', 'vina099@mail.com'),
 ('2025-100', 'Wade Jimenez', 'BSIT', '11', 'wade100@mail.com');
+-- (You can add the rest of your 100 students here)
 
-
--- INSERT SAMPLE BOOKS
-
+-- ===============================
+-- BOOKS
+-- ===============================
 INSERT IGNORE INTO books (title, author, category, publication_year, isbn)
 VALUES
 ('Database Systems', 'Silberschatz', 'Computer Science', 2019, '978-0132149181'),
@@ -121,39 +125,138 @@ VALUES
 ('Intro to Psychology', 'David Myers', 'Psychology', 2020, '978-1319050627'),
 ('Architectural Design', 'Francis D.K. Ching', 'Architecture', 2015, '978-1118745083');
 
+-- ===============================
+-- BORROW RECORD UPDATES
+-- ===============================
 
+-- Change librarian_id to staff_id
+ALTER TABLE borrow_records CHANGE librarian_id staff_id INT;
+
+-- Add foreign key for staff_id
+ALTER TABLE borrow_records ADD FOREIGN KEY (staff_id) REFERENCES users(user_id);
+
+-- Add source and confirmed_at columns
+ALTER TABLE borrow_records 
+  ADD COLUMN source ENUM('manual', 'appointment') DEFAULT 'manual',
+  ADD COLUMN confirmed_at DATETIME DEFAULT CURRENT_TIMESTAMP;
+
+-- Add penalty system inside borrow_records
+ALTER TABLE borrow_records 
+  ADD COLUMN penalty DECIMAL(10,2) DEFAULT 0;
+
+-- Drop returned column and replace with new status system
+ALTER TABLE borrow_records DROP COLUMN returned;
+
+ALTER TABLE borrow_records 
+  ADD COLUMN status ENUM('borrowed','returned','overdue','lost') DEFAULT 'borrowed' AFTER return_date;
+
+-- ===============================
+-- APPOINTMENTS TABLE
+-- ===============================
+CREATE TABLE IF NOT EXISTS appointments (
+  appointment_id INT AUTO_INCREMENT PRIMARY KEY,
+  student_id INT NOT NULL,
+  book_id INT NOT NULL,
+  staff_id INT,
+  type ENUM('borrow','return') NOT NULL,
+  scheduled_date DATETIME NOT NULL,
+  status ENUM('pending','approved','denied','ready_for_pickup','picked_up','awaiting_return','returned') DEFAULT 'pending',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (student_id) REFERENCES students(student_id),
+  FOREIGN KEY (book_id) REFERENCES books(book_id),
+  FOREIGN KEY (staff_id) REFERENCES users(user_id)
+);
+
+-- ===============================
+-- BOOK & STUDENT UPDATES
+-- ===============================
+
+ALTER TABLE books MODIFY COLUMN status ENUM(
+  'available',
+  'borrowed',
+  'lost',
+  'reserved',
+  'ready_for_pickup',
+  'awaiting_return'
+) DEFAULT 'available';
+
+ALTER TABLE students 
+  ADD COLUMN user_id INT UNIQUE,
+  ADD FOREIGN KEY (user_id) REFERENCES users(user_id);
+
+-- ===============================
 -- SAMPLE BORROW RECORD
-
-INSERT IGNORE INTO borrow_records (student_id, book_id, librarian_id, due_date)
+-- ===============================
+INSERT IGNORE INTO borrow_records (student_id, book_id, staff_id, due_date)
 VALUES (1, 1, 2, DATE_ADD(NOW(), INTERVAL 7 DAY));
 
--- Update book status to borrowed
 UPDATE books SET status = 'borrowed' WHERE book_id = 1;
 
+-- ===============================
+-- PENALTY SYSTEM (2-day warning, ₱5/day after)
+-- ===============================
 
--- TEST OUTPUT QUERIES
+-- Trigger to auto-calculate penalty when record is updated
+DELIMITER //
+CREATE TRIGGER trg_penalty_update
+BEFORE UPDATE ON borrow_records
+FOR EACH ROW
+BEGIN
+    DECLARE days_overdue INT;
+    SET days_overdue = DATEDIFF(NOW(), NEW.due_date);
 
+    IF NEW.status = 'borrowed' AND days_overdue > 2 THEN
+        SET NEW.penalty = (days_overdue - 2) * 5;
+    ELSEIF days_overdue <= 2 THEN
+        SET NEW.penalty = 0;
+    END IF;
+END;
+//
+DELIMITER ;
 
--- Show all users
-SELECT * FROM users;
+-- ===============================
+-- DAILY EVENT TO UPDATE OVERDUE + PENALTY
+-- ===============================
 
--- Show all students
-SELECT * FROM students;
+SET GLOBAL event_scheduler = ON;
 
--- Show all books
-SELECT * FROM books;
+DELIMITER //
+CREATE EVENT IF NOT EXISTS evt_daily_overdue_update
+ON SCHEDULE EVERY 1 DAY
+DO
+BEGIN
+  -- Mark overdue books
+  UPDATE borrow_records
+  SET status = 'overdue'
+  WHERE status = 'borrowed' AND due_date < NOW();
 
--- Show borrow records with details
+  -- Update penalty daily
+  UPDATE borrow_records
+  SET penalty = CASE
+      WHEN DATEDIFF(NOW(), due_date) > 2 THEN (DATEDIFF(NOW(), due_date) - 2) * 5
+      ELSE 0
+  END
+  WHERE status IN ('borrowed','overdue');
+END;
+//
+DELIMITER ;
+
+-- ===============================
+-- CHECKS / OUTPUT
+-- ===============================
+SHOW VARIABLES LIKE 'event_scheduler';
+
 SELECT 
   br.record_id,
   s.full_name AS student,
   b.title AS book,
-  u.username AS librarian,
+  u.username AS staff,
   br.borrow_date,
   br.due_date,
   br.return_date,
-  br.returned
+  br.status,
+  br.penalty
 FROM borrow_records br
 JOIN students s ON br.student_id = s.student_id
 JOIN books b ON br.book_id = b.book_id
-LEFT JOIN users u ON br.librarian_id = u.user_id;
+LEFT JOIN users u ON br.staff_id = u.user_id;
