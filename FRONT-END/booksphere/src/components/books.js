@@ -21,7 +21,7 @@ function Books() {
     isbn: ''
   });
   const [currentPage, setCurrentPage] = useState(1);
-  const booksPerPage = 15;
+  const booksPerPage = 10;
   const [showAppointmentForm, setShowAppointmentForm] = useState(false);
   const [appointmentNote, setAppointmentNote] = useState('');
 

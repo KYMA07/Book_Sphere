@@ -35,6 +35,7 @@ body {
     color: var(--text-primary);
     line-height: 1.6;
     overflow-y: scroll; /* Always show scrollbar to prevent layout shifts */
+    
 }
 
 /* Background Overlay for depth */
@@ -46,6 +47,7 @@ body::before {
     background: linear-gradient(180deg, rgba(15,10,7,0.95) 0%, rgba(15,10,7,0.9) 20%, rgba(15,10,7,0.85) 80%, rgba(15,10,7,0.95) 100%);
     z-index: -1;
     pointer-events: none;
+    
 }
 
 /* Base page container */
@@ -55,6 +57,7 @@ body::before {
     padding: 0 30px;
     position: relative;
     z-index: 1; /* Ensure content is above background effects */
+    padding-bottom: 100px; 
 }
 
 /* --- H1 Header with Animation --- */
