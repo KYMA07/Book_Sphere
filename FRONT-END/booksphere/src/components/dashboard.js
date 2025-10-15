@@ -12,31 +12,31 @@ function Dashboard() {
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPerPage = 15;
 
-  const fetchRecords = async () => {
-    try {
-      let url = 'http://localhost:5000/borrow';
-      let params = {};
-
-      if (range !== 'overall' || status !== '') {
-        url = 'http://localhost:5000/borrow/filtered';
-        params = { range, status };
+  useEffect(() => {
+    const fetchRecords = async () => {
+      try {
+        let url = 'http://localhost:5000/borrow';
+        let params = {};
+        if (range !== 'overall' || status !== '') {
+          url = 'http://localhost:5000/borrow/filtered';
+          params = { range, status };
+        }
+        const res = await axios.get(url, { params });
+        setRecords(res.data);
+        const fullRes = await axios.get('http://localhost:5000/borrow');
+        setAllRecords(fullRes.data);
+        const appointRes = await axios.get('http://localhost:5000/appointments');
+        const data = appointRes.data;
+        setAppointments(Array.isArray(data.appointments) ? data.appointments : Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error("Error fetching records:", err);
       }
-
-      const res = await axios.get(url, { params });
-      setRecords(res.data);
-
-      const fullRes = await axios.get('http://localhost:5000/borrow');
-      setAllRecords(fullRes.data);
-
-      const appointRes = await axios.get('http://localhost:5000/appointments');
-      setAppointments(appointRes.data);
-    } catch (err) {
-      console.error("Error fetching records:", err);
-    }
-  };
+    };
+    fetchRecords();
+  }, [range, status]);
 
   useEffect(() => {
-    fetchRecords();
+    setCurrentPage(1);
   }, [range, status]);
 
   const borrowedCount = allRecords.filter(r => r.status === 'borrowed').length;
@@ -45,7 +45,7 @@ function Dashboard() {
   const appointmentBorrowed = allRecords.filter(r => r.source === 'appointment').length;
   const manualBorrowed = allRecords.filter(r => r.source === 'manual').length;
   const activeStudents = new Set(allRecords.map(r => r.student_id)).size;
-  const pendingAppointments = appointments.filter(a => a.status === 'pending').length;
+  const pendingAppointments = (Array.isArray(appointments) ? appointments : []).filter(a => a.status === 'pending').length;
 
   const handleExport = () => {
     const csv = [
@@ -60,7 +60,6 @@ function Dashboard() {
         r.status
       ])
     ].map(row => row.join(',')).join('\n');
-
     const blob = new Blob([csv], { type: 'text/csv' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
@@ -69,37 +68,53 @@ function Dashboard() {
   };
 
   return (
-    <div className="dashboard-page">
-      <h1>Library Dashboard</h1>
+    <div className="library-dashboard">
+    <h1>Booksphere Library</h1>
 
-      <div className="controls">
-        <select value={range} onChange={(e) => setRange(e.target.value)}>
-          <option value="overall">Overall</option>
-          <option value="day">Today</option>
-          <option value="week">This Week</option>
-          <option value="month">This Month</option>
-          <option value="year">This Year</option>
-        </select>
-        <button onClick={handleExport}>Export CSV</button>
-      </div>
+    {/* Time Range & Status Filters */}
+    <div className="dashboard-filters">
+      <select value={range} onChange={(e) => setRange(e.target.value)}>
+        <option value="overall">Overall</option>
+        <option value="day">Today</option>
+        <option value="week">This Week</option>
+        <option value="month">This Month</option>
+        <option value="year">This Year</option>
+      </select>
 
-      <div className="summary-cards">
-        <button onClick={() => setStatus(status === 'borrowed' ? '' : 'borrowed')}>
-          Books Borrowed: {borrowedCount}
-        </button>
-        <button onClick={() => setStatus(status === 'returned' ? '' : 'returned')}>
-          Books Returned: {returnedCount}
-        </button>
-        <button onClick={() => setStatus(status === 'overdue' ? '' : 'overdue')}>
-          Books Overdue: {overdueCount}
-        </button>
-        <button disabled>Borrowed via Appointments: {appointmentBorrowed}</button>
-        <button disabled>Borrowed Manually: {manualBorrowed}</button>
-        <button disabled>Active Students: {activeStudents}</button>
-        <button disabled>Pending Appointments: {pendingAppointments}</button>
-      </div>
+      <select value={status} onChange={(e) => setStatus(e.target.value)}>
+        <option value="">All Status</option>
+        <option value="borrowed">Borrowed</option>
+        <option value="returned">Returned</option>
+        <option value="overdue">Overdue</option>
+      </select>
 
-      <table className="records-table">
+      <button onClick={handleExport}> Export CSV</button>
+    </div>
+
+    {/* Summary Cards */}
+    <div className="dashboard-summary">
+      <div className="card"> Borrowed via Appointments: {appointmentBorrowed}</div>
+      <div className="card"> Borrowed Manually: {manualBorrowed}</div>
+      <div className="card"> Active Students: {activeStudents}</div>
+      <div className="card"> Pending Appointments: {pendingAppointments}</div>
+    </div>
+
+    {/* Status Buttons */}
+    <div className="status-buttons">
+      <button onClick={() => setStatus(status === 'borrowed' ? '' : 'borrowed')}>
+        Borrowed: {borrowedCount}
+      </button>
+      <button onClick={() => setStatus(status === 'returned' ? '' : 'returned')}>
+        Returned: {returnedCount}
+      </button>
+      <button onClick={() => setStatus(status === 'overdue' ? '' : 'overdue')}>
+        Overdue: {overdueCount}
+      </button>
+    </div>
+
+    
+
+      <table className="books-table"> {/* Use books-table for consistent style */}
         <thead>
           <tr>
             <th>Record ID</th>
@@ -122,13 +137,13 @@ function Dashboard() {
                 <td>{r.User?.username}</td>
                 <td>{r.borrow_date ? new Date(r.borrow_date).toLocaleDateString() : '-'}</td>
                 <td>{r.due_date ? new Date(r.due_date).toLocaleDateString() : '-'}</td>
-                <td>{r.status}</td>
+                <td data-status={r.status}>{r.status}</td>
               </tr>
           ))}
         </tbody>
       </table>
 
-      <div className="pagination">
+      <div className="pagination"> {/* Use books.js pagination style */}
         <button
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}

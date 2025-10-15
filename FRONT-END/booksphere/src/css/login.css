@@ -58,7 +58,7 @@ body, html {
     width: 100%; 
     background-image: url('../resources/librarybackground.jpg');
     background-repeat: no-repeat;
-    /* 💥 CRITICAL FIX: Pin the image to the top-left corner (0 0) 💥 */
+   
     background-position: 0 0; 
     background-attachment: fixed;
     background-size: cover;

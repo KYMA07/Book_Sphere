@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import '../css/styles.css';
+import '../css/user.css';
 
 function Users() {
   const [users, setUsers] = useState([]);
   const [form, setForm] = useState({ username: '', email: '', password: '', role: 'Student' });
   const [message, setMessage] = useState('');
-  const [showForm, setShowForm] = useState(false); // toggle state
+  const [showForm, setShowForm] = useState(false); 
+  const [currentPage, setCurrentPage] = useState(1);
+  const usersPerPage = 10;
 
   const fetchUsers = async () => {
     try {
@@ -112,19 +114,40 @@ function Users() {
           </tr>
         </thead>
         <tbody>
-          {users.map((u) => (
-            <tr key={u.user_id}>
-              <td>{u.user_id}</td>
-              <td>{u.username}</td>
-              <td>{u.email}</td>
-              <td>{u.role}</td>
-              <td>
-                <button onClick={() => handleRemove(u.user_id)}>Remove</button>
-              </td>
-            </tr>
+          {users
+            .slice((currentPage - 1) * usersPerPage, currentPage * usersPerPage)
+            .map((u) => (
+              <tr key={u.user_id}>
+                <td>{u.user_id}</td>
+                <td>{u.username}</td>
+                <td>{u.email}</td>
+                <td>{u.role}</td>
+                <td>
+                  <button onClick={() => handleRemove(u.user_id)}>Remove</button>
+                </td>
+              </tr>
           ))}
         </tbody>
       </table>
+      <div className="pagination">
+        <button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+        >
+          ◀ Prev
+        </button>
+        <span>Page {currentPage} of {Math.ceil(users.length / usersPerPage)}</span>
+        <button
+          onClick={() =>
+            setCurrentPage((prev) =>
+              prev < Math.ceil(users.length / usersPerPage) ? prev + 1 : prev
+            )
+          }
+          disabled={currentPage >= Math.ceil(users.length / usersPerPage)}
+        >
+          Next ▶
+        </button>
+      </div>
     </div>
   );
 }
