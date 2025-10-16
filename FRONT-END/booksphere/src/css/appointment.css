@@ -146,6 +146,36 @@ textarea:focus {
   transform: translateX(6px);
   box-shadow: 4px 0 10px rgba(212,176,122,0.2);
 }
+/* Add this new rule to your CSS to ensure buttons inside list items are styled correctly */
+.appointment-item button {
+  /* Inherit the action-btn styling for the Confirm Pickup button */
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  background: linear-gradient(145deg, var(--text-gold), var(--text-bronze));
+  color: var(--bg-deep);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-light);
+  /* Ensure a little space between the text and the button */
+  margin-left: 10px; 
+}
+
+/* Ensure hover/disabled states are applied */
+.appointment-item button:hover:not(:disabled) {
+  background: linear-gradient(145deg, #e8c68a, #a07d56);
+  transform: scale(1.05);
+  box-shadow: var(--glow-gold);
+}
+
+.appointment-item button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
 
 .toggle-btn {
   padding: 10px 20px;
@@ -274,6 +304,7 @@ textarea:focus {
 .status-pending  { background: rgba(212, 176, 122, 0.2); color: var(--accent-magic-light); }
 
 /* Reuse action button style */
+/* Reusable Action Button Style - The base for list item buttons */
 .action-btn {
   padding: 8px 16px;
   border-radius: 6px;
@@ -299,11 +330,34 @@ textarea:focus {
   cursor: not-allowed;
   box-shadow: none;
 }
-/* Status Colors */
-.status-pending { color: var(--accent-magic-light); }
-.status-approved { color: var(--status-available); }
-.status-picked_up,
-.status-awaiting_return { color: var(--status-borrowed); }
-.status-overdue { color: var(--status-lost); }
-.status-returned,
-.status-denied { color: var(--text-secondary); }
+
+/* FIX: Targets and styles the buttons inside the appointment list items (like 'Confirm Pickup' and 'Request Return') */
+.appointment-item button { 
+  /* Uses the visual properties from .action-btn for consistency */
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  background: linear-gradient(145deg, var(--text-gold), var(--text-bronze));
+  color: var(--bg-deep);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-light);
+  margin-left: 15px; /* Ensures spacing */
+  flex-shrink: 0;
+}
+
+.appointment-item button:hover:not(:disabled) {
+  background: linear-gradient(145deg, #e8c68a, #a07d56);
+  transform: scale(1.05);
+  box-shadow: var(--glow-gold);
+}
+
+.appointment-item button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+

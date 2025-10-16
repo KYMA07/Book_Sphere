@@ -65,7 +65,6 @@ function StaffAppointment() {
     'ready_for_pickup',
     'picked_up',
     'awaiting_return',
-    'approved_return',
     'returned',
     'denied'
   ];

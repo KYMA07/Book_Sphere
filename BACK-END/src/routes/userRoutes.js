@@ -5,16 +5,17 @@ import {
   listUsers,
   removeUser
 } from '../controllers/userController.js';
+
 import { authenticateJWT, requireStaff } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-router.post('/register', authenticateJWT, requireStaff, registerUser);
-router.post('/login', loginUser);
-router.get('/users', authenticateJWT, requireStaff, listUsers);
-router.delete('/remove/:id', authenticateJWT, requireStaff, removeUser);
+// Public routes — no token required
+router.post('/register', registerUser); // Student or Staff registration
+router.post('/login', loginUser);       // Login returns JWT
 
-//router.post('/register', registerUser);
-//router.get('/users', listUsers);
-//router.delete('/remove/:id', removeUser);
+// Protected routes — require valid token and Staff role
+router.get('/users', authenticateJWT, requireStaff, listUsers);       // List all users
+router.delete('/remove/:id', authenticateJWT, requireStaff, removeUser); // Remove user by ID
+
 export default router;

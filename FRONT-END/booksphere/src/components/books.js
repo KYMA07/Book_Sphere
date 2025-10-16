@@ -23,7 +23,7 @@ function Books() {
   const [currentPage, setCurrentPage] = useState(1);
   const booksPerPage = 10;
   const [showAppointmentForm, setShowAppointmentForm] = useState(false);
-  const [appointmentNote, setAppointmentNote] = useState('');
+  const [appointmentDate, setAppointmentDate] = useState('');
 
   const role = (localStorage.getItem('role') || '').toLowerCase();
   const userId = localStorage.getItem('user_id');
@@ -112,7 +112,7 @@ function Books() {
     }
   };
   const submitAppointment = async () => {
-    if (!studentNumber || !selectedBook?.book_id || !appointmentNote) {
+    if (!studentNumber || !selectedBook?.book_id || !appointmentDate) {
       alert('❌ Missing required fields.');
       return;
     }
@@ -121,15 +121,14 @@ function Books() {
       const res = await axios.post('http://localhost:5000/appointments', {
         student_id: studentNumber,
         book_id: selectedBook.book_id,
-        note: appointmentNote,
         type: 'borrow',
-        scheduled_date: new Date().toISOString().split('T')[0] // default to today
+        scheduled_date: appointmentDate   // <-- use the chosen date
       });
 
       alert(`✅ ${res.data.message || 'Appointment set successfully'}`);
       setShowAppointmentForm(false);
       setSelectedBook(null);
-      setAppointmentNote('');
+      setAppointmentDate(''); // reset
     } catch (err) {
       const msg = err.response?.data?.message || err.response?.data?.error || 'Appointment failed';
       alert(`❌ ${msg}`);
@@ -238,7 +237,7 @@ function Books() {
         </select>
 
         {(role === 'librarian' ) && (
-          <button onClick={() => setShowAddModal(true)}>➕ Add Book</button>
+          <button onClick={() => setShowAddModal(true)}> + Add Book</button>
         )}
       </div>
 
@@ -318,11 +317,16 @@ function Books() {
                       </button>
                     ) : (
                       <div className="appointment-form">
-                        <textarea
-                          placeholder="Add a note or preferred time..."
-                          value={appointmentNote}
-                          onChange={(e) => setAppointmentNote(e.target.value)}
-                        />
+                        {/* Replace textarea with calendar input */}
+                        <label>
+                          Choose appointment date & time:
+                          <input
+                            type="datetime-local"
+                            value={appointmentDate}
+                            onChange={(e) => setAppointmentDate(e.target.value)}
+                          />
+                        </label>
+
                         <button onClick={submitAppointment}>Submit Appointment</button>
                         <button onClick={() => setShowAppointmentForm(false)}>Cancel</button>
                       </div>
@@ -330,7 +334,9 @@ function Books() {
                   </>
                 )}
                 {selectedBook.status === 'reserved' && (
-                  <p className="status-note">📚 This book is currently reserved. You’ll be notified when it’s ready for pickup.</p>
+                  <p className="status-note">
+                    📚 This book is currently reserved. You’ll be notified when it’s ready for pickup.
+                  </p>
                 )}
               </>
             )}

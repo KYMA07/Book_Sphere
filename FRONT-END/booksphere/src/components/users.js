@@ -6,15 +6,19 @@ function Users() {
   const [users, setUsers] = useState([]);
   const [form, setForm] = useState({ username: '', email: '', password: '', role: 'Student' });
   const [message, setMessage] = useState('');
-  const [showForm, setShowForm] = useState(false); 
+  const [showForm, setShowForm] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 10;
 
+  // ✅ Retrieve token from localStorage
+  const token = localStorage.getItem('token');
+
   const fetchUsers = async () => {
     try {
-      const token = localStorage.getItem('token');
       const res = await axios.get('http://localhost:5000/user/users', {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
       setUsers(res.data);
     } catch (err) {
@@ -27,7 +31,6 @@ function Users() {
     fetchUsers();
   }, []);
 
-
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -35,13 +38,10 @@ function Users() {
   const handleCreate = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/user/register', form, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await axios.post('http://localhost:5000/user/register', form);
       setMessage('User created successfully');
       setForm({ username: '', email: '', password: '', role: 'Student' });
-      setShowForm(false); // ✅ hide form after submit
+      setShowForm(false);
       fetchUsers();
     } catch (err) {
       console.error(err);
@@ -51,9 +51,10 @@ function Users() {
 
   const handleRemove = async (id) => {
     try {
-      const token = localStorage.getItem('token');
       await axios.delete(`http://localhost:5000/user/remove/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
       setMessage('User removed successfully');
       fetchUsers();
@@ -72,7 +73,6 @@ function Users() {
         {showForm ? 'Cancel' : 'Create User'}
       </button>
 
-      
       {showForm && (
         <form className="user-form" onSubmit={handleCreate}>
           <input
@@ -106,7 +106,6 @@ function Users() {
         </form>
       )}
 
-     
       <table className="users-table">
         <thead>
           <tr>
@@ -129,6 +128,7 @@ function Users() {
           ))}
         </tbody>
       </table>
+
       <div className="pagination">
         <button
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}

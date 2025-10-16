@@ -339,7 +339,7 @@ body { font-family: "Playfair Display", serif; background: var(--bg-deep); color
 /* Greeting text */
 .greeting-title{
   font-family:"Cinzel", serif;
-  font-size:2.6rem;
+  font-size:7.2rem;
   color:var(--parchment);
   margin-bottom:8px;
   letter-spacing:0.02em;
@@ -350,7 +350,7 @@ body { font-family: "Playfair Display", serif; background: var(--bg-deep); color
 /* subtitle */
 .greeting-sub{
   color:var(--muted);
-  font-size:1.05rem;
+  font-size:1.5rem;
   margin-bottom:18px;
   opacity:0.95;
 }
@@ -409,58 +409,68 @@ body { font-family: "Playfair Display", serif; background: var(--bg-deep); color
 }
 
 /* ===== Candle visuals ===== */
-.floating-candle{
-  position:absolute;
-  width:12px;
-  height:58px;
-  border-radius:4px;
+/* ===== Candle visuals ===== */
+/* ===== Candle visuals ===== */
+.floating-candle {
+  position: absolute;
+  width: 12px;
+  height: 58px;
+  border-radius: 4px;
   background: linear-gradient(180deg, rgba(255,250,230,0.95), rgba(245,220,160,0.9));
   filter: drop-shadow(0 12px 26px rgba(255,200,110,0.12));
-  transform-origin:center bottom;
+  transform-origin: center bottom;
   animation: slowFloat 16s ease-in-out infinite;
-  opacity:0.95;
+  opacity: 0.95;
 }
-.floating-candle .flame{
-  position:absolute;
-  left:50%;
-  transform:translateX(-50%);
-  top:-12px;
-  width:8px;
-  height:14px;
+
+.floating-candle .flame {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: -12px;
+  width: 8px;
+  height: 14px;
   border-radius: 50% 50% 40% 40%;
   background: radial-gradient(circle at 30% 30%, var(--flame-core), var(--flame-glow) 60%, rgba(255,140,40,0.05) 100%);
   filter: blur(1.6px);
   box-shadow: 0 0 20px rgba(255,170,70,0.24);
-  animation: gentleFlame 1.2s ease-in-out infinite;
+  animation: gentleFlame 1.2s ease-in-out infinite, flameFlicker 0.8s ease-in-out infinite;
 }
 
-/* candle floating and slow sway */
-@keyframes slowFloat{
-  0% { transform: translateY(0) rotate(-1deg); }
-  50% { transform: translateY(-46px) rotate(2deg); }
-  100% { transform: translateY(0) rotate(-1deg); }
-}
-@keyframes gentleFlame{
-  0% { transform: translateX(-50%) scaleY(1); opacity:0.95; filter:blur(1.6px); }
-  50% { transform: translateX(-50%) scaleY(1.15); opacity:1; filter:blur(1.8px); }
-  100% { transform: translateX(-50%) scaleY(1); opacity:0.95; filter:blur(1.6px); }
+/* Enhanced floating animation */
+@keyframes slowFloat {
+  0%   { transform: translate(0, 0) rotate(-1deg); }
+  25%  { transform: translate(2px, -20px) rotate(1deg); }
+  50%  { transform: translate(-2px, -40px) rotate(2deg); }
+  75%  { transform: translate(1px, -20px) rotate(0deg); }
+  100% { transform: translate(0, 0) rotate(-1deg); }
 }
 
-.candle-1{ left:12%; top:32%; animation-delay:0s; }
-.candle-2{ left:28%; top:26%; animation-delay:1.2s; }
-.candle-3{ left:40%; top:30%; animation-delay:2.0s; }
-.candle-4{ left:58%; top:28%; animation-delay:1.6s; }
-.candle-5{ left:72%; top:32%; animation-delay:0.6s; }
-.candle-6{ left:88%; top:40%; animation-delay:2.4s; }
-.candle-7{ left:20%; top:58%; animation-delay:3.2s; }
-.candle-8{ left:36%; top:64%; animation-delay:2.8s; }
-.candle-9{ left:52%; top:72%; animation-delay:1.4s; }
-.candle-10{ left:68%; top:80%; animation-delay:0.9s; }
-.candle-11{ left:84%; top:88%; animation-delay:3.6s; }
-.candle-12{ left:90%; top:100%; animation-delay:2.2s; }
+/* Gentle flame pulse */
+@keyframes gentleFlame {
+  0%   { transform: translateX(-50%) scaleY(1); opacity: 0.95; filter: blur(1.6px); }
+  50%  { transform: translateX(-50%) scaleY(1.15); opacity: 1; filter: blur(1.8px); }
+  100% { transform: translateX(-50%) scaleY(1); opacity: 0.95; filter: blur(1.6px); }
+}
 
+/* Flicker variation */
+@keyframes flameFlicker {
+  0%, 100% { opacity: 0.95; transform: translateX(-50%) scaleY(1); }
+  40% { opacity: 1; transform: translateX(-50%) scaleY(1.1); }
+  60% { opacity: 0.9; transform: translateX(-50%) scaleY(1.05); }
+}
 
+/* Left side candles */
+.candle-1 { left: 2%; top: 10%; animation-delay: 0s; }
+.candle-2 { left: 2%; top: 30%; animation-delay: 1.2s; }
+.candle-3 { left: 2%; top: 50%; animation-delay: 2.4s; }
+.candle-4 { left: 2%; top: 70%; animation-delay: 3.6s; }
 
+/* Right side candles */
+.candle-5 { left: 96%; top: 15%; animation-delay: 0.6s; }
+.candle-6 { left: 96%; top: 35%; animation-delay: 1.8s; }
+.candle-7 { left: 96%; top: 55%; animation-delay: 3s; }
+.candle-8 { left: 96%; top: 75%; animation-delay: 4.2s; }
 /* ===== Dust motes layer ===== */
 .motes-layer {
   position: absolute;

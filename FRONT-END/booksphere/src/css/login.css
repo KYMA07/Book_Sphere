@@ -138,7 +138,7 @@ body, html {
     text-align: center;
     width: 340px;
     /* Adjusted height for content, or remove if you want it to be dynamic */
-    height: auto; 
+    height: 530px; 
     color: #fffaf0;
     animation: fadeInZoom 1.2s ease-out;
     border: 1px solid rgba(193, 154, 107, 0.2);

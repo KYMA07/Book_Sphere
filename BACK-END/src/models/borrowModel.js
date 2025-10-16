@@ -3,6 +3,7 @@ import sequelize from '../database/database.js';
 import Student from './studentModel.js';
 import Book from './bookModel.js';
 import User from './userModel.js';
+import Appointment from './appointModel.js';   // <-- import Appointment model
 
 export const BorrowRecord = sequelize.define('BorrowRecord', {
   record_id: {
@@ -32,6 +33,14 @@ export const BorrowRecord = sequelize.define('BorrowRecord', {
     references: {
       model: User,
       key: 'user_id'
+    }
+  },
+  appointment_id: {   // <-- new foreign key
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: Appointment,
+      key: 'appointment_id'
     }
   },
   source: {
@@ -76,3 +85,7 @@ BorrowRecord.belongsTo(Book, { foreignKey: 'book_id' });
 
 User.hasMany(BorrowRecord, { foreignKey: 'staff_id' });
 BorrowRecord.belongsTo(User, { foreignKey: 'staff_id' });
+
+// New association with Appointment
+Appointment.hasMany(BorrowRecord, { foreignKey: 'appointment_id' });
+BorrowRecord.belongsTo(Appointment, { foreignKey: 'appointment_id' });
