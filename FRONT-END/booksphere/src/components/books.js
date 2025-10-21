@@ -236,8 +236,8 @@ function Books() {
           <option value="lost">Lost</option>
         </select>
 
-        {(role === 'librarian' ) && (
-          <button onClick={() => setShowAddModal(true)}> + Add Book</button>
+        {(role === 'staff' ) && (
+          <button className="addbtn"onClick={() => setShowAddModal(true)}> + Add Book</button>
         )}
       </div>
 

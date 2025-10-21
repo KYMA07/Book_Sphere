@@ -278,6 +278,8 @@ textarea:focus {
   text-transform: capitalize;
 }
 
+
+
 /* Status Colors */
 .status-pending { color: var(--accent-magic-light); }
 .status-approved { color: var(--status-available); }

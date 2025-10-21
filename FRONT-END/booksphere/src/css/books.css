@@ -130,7 +130,25 @@ body::before {
     box-shadow: 0 6px 16px rgba(212, 176, 122, 0.6); /* Stronger glow */
 }
 
+.addbtn  {
+    background: linear-gradient(145deg, var(--text-gold), var(--text-bronze)); /* Gradient gold button */
+    color: var(--bg-deep); /* Dark text on gold */
+    border: none;
+    padding: 8px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Cinzel', serif; /* Magical button text */
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
 
+.addbtn :hover {
+    background: linear-gradient(145deg, #e8c68a, #a07d56); /* Slightly lighter gradient */
+    transform: translateY(-3px) scale(1.02); /* More pronounced lift */
+    box-shadow: 0 6px 16px rgba(212, 176, 122, 0.6); /* Stronger glow */
+}
 /* --- Controls (Search, Sort, Filters) --- */
 .controls {
     display: flex;
